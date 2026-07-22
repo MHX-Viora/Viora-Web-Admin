@@ -1,9 +1,9 @@
-import { apiClient } from './http';
-import type { ListParams, PageResult, User } from '../types/admin';
+import { apiClient, normalizePageResult } from './http';
+import type { ListParams, User } from '../types/admin';
 
 export async function getUsers(params: ListParams) {
-  const { data } = await apiClient.get<PageResult<User>>('/api/admin/users', { params });
-  return data;
+  const { data } = await apiClient.get<unknown>('/api/admin/users', { params });
+  return normalizePageResult<User>(data);
 }
 
 export async function updateUserStatus(userId: string, action: 'lock' | 'unlock' | 'verify' | 'unverify') {

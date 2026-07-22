@@ -6,15 +6,15 @@ import { getErrorMessage } from '../services/http';
 import { formatNumber } from '../utils/format';
 
 const stats = [
-  ['totalUsers', 'Tong nguoi dung', Users, 'blue'],
-  ['newUsersToday', 'Nguoi dung moi hom nay', UserPlus, 'green'],
-  ['activeUsersToday', 'Hoat dong hom nay', Activity, 'teal'],
-  ['totalPosts', 'Tong bai viet', FileText, 'amber'],
-  ['totalVideos', 'Tong video', Video, 'rose'],
-  ['totalComments', 'Tong binh luan', MessageCircle, 'violet'],
-  ['chatRooms', 'Phong chat', MessageSquare, 'cyan'],
-  ['pendingReports', 'Bao cao cho xu ly', Flag, 'red'],
-  ['pendingIdentities', 'CCCD cho duyet', ShieldCheck, 'indigo'],
+  ['totalUsers', 'Tổng người dùng', Users, 'blue'],
+  ['newUsersToday', 'Người dùng mới hôm nay', UserPlus, 'green'],
+  ['activeUsersToday', 'Hoạt động hôm nay', Activity, 'teal'],
+  ['totalPosts', 'Tổng bài viết', FileText, 'amber'],
+  ['totalVideos', 'Tổng video', Video, 'rose'],
+  ['totalComments', 'Tổng bình luận', MessageCircle, 'violet'],
+  ['chatRooms', 'Phòng chat', MessageSquare, 'cyan'],
+  ['pendingReports', 'Báo cáo chờ xử lý', Flag, 'red'],
+  ['pendingIdentities', 'CCCD chờ duyệt', ShieldCheck, 'indigo'],
 ] as const;
 
 export function DashboardPage() {
@@ -22,7 +22,7 @@ export function DashboardPage() {
 
   return (
     <section>
-      <PageHeader title="Dashboard" description="Tong quan tinh trang van hanh cua Viora." />
+      <PageHeader title="Bảng điều khiển" description="Tổng quan tình trạng vận hành của Viora." />
       {query.isLoading ? <Loading rows={9} /> : null}
       {query.isError ? <ErrorView message={getErrorMessage(query.error)} onRetry={() => void query.refetch()} /> : null}
       {query.data ? (

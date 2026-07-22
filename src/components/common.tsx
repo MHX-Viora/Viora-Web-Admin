@@ -14,7 +14,23 @@ export function PageHeader({ title, description, actions }: { title: string; des
   );
 }
 
-export function SearchBox({ value, onChange, placeholder = 'Tim kiem' }: { value: string; onChange: (value: string) => void; placeholder?: string }) {
+const statusLabels: Record<string, string> = {
+  active: 'Đang hoạt động',
+  inactive: 'Không hoạt động',
+  locked: 'Đã khóa',
+  pending: 'Chờ xử lý',
+  approved: 'Đã duyệt',
+  rejected: 'Đã từ chối',
+  hidden: 'Đã ẩn',
+  deleted: 'Đã xóa',
+  resolved: 'Đã xử lý',
+};
+
+export function getStatusLabel(status: Status | string) {
+  return statusLabels[status] ?? status;
+}
+
+export function SearchBox({ value, onChange, placeholder = 'Tìm kiếm' }: { value: string; onChange: (value: string) => void; placeholder?: string }) {
   return (
     <label className="search-box">
       <Search size={16} />
@@ -25,7 +41,7 @@ export function SearchBox({ value, onChange, placeholder = 'Tim kiem' }: { value
 
 export function Loading({ rows = 6 }: { rows?: number }) {
   return (
-    <div className="skeleton-stack" aria-busy="true" aria-label="Dang tai du lieu">
+    <div className="skeleton-stack" aria-busy="true" aria-label="Đang tải dữ liệu">
       {Array.from({ length: rows }).map((_, index) => (
         <div className="skeleton-row" key={index} />
       ))}
@@ -33,7 +49,7 @@ export function Loading({ rows = 6 }: { rows?: number }) {
   );
 }
 
-export function Empty({ title = 'Chua co du lieu', description = 'Du lieu se hien thi tai day khi API tra ve ket qua.' }: { title?: string; description?: string }) {
+export function Empty({ title = 'Chưa có dữ liệu', description = 'Dữ liệu sẽ hiển thị tại đây khi API trả về kết quả.' }: { title?: string; description?: string }) {
   return (
     <div className="state-view" role="status">
       <Inbox size={32} />
@@ -47,17 +63,17 @@ export function ErrorView({ message, onRetry }: { message: string; onRetry: () =
   return (
     <div className="state-view error" role="alert">
       <AlertTriangle size={32} />
-      <strong>Khong tai duoc du lieu</strong>
+      <strong>Không tải được dữ liệu</strong>
       <span>{message}</span>
       <button className="btn primary" type="button" onClick={onRetry}>
-        Thu lai
+        Thử lại
       </button>
     </div>
   );
 }
 
 export function StatusBadge({ status }: { status: Status | string }) {
-  return <span className={`status-badge ${status}`}>{status}</span>;
+  return <span className={`status-badge ${status}`}>{getStatusLabel(status)}</span>;
 }
 
 export function UserAvatar({ src, name, size = 'md' }: { src?: string; name: string; size?: 'sm' | 'md' | 'lg' }) {
@@ -81,7 +97,7 @@ export type Column<T> = {
   render: (item: T) => ReactNode;
 };
 
-export function DataTable<T extends { id: string }>({ columns, items, onRowClick }: { columns: Column<T>[]; items: T[]; onRowClick?: (item: T) => void }) {
+export function DataTable<T extends { id: string }>({ columns, items = [], onRowClick }: { columns: Column<T>[]; items?: T[]; onRowClick?: (item: T) => void }) {
   if (items.length === 0) return <Empty />;
 
   return (
@@ -119,14 +135,14 @@ export function Pagination({
 
   return (
     <div className="pagination">
-      <span>{total} ket qua</span>
+      <span>{total} kết quả</span>
       <select value={pageSize} onChange={(event) => onPageSizeChange(Number(event.target.value))}>
         <option value={10}>10 / trang</option>
         <option value={20}>20 / trang</option>
         <option value={50}>50 / trang</option>
       </select>
       <button className="btn" disabled={page <= 1} onClick={() => onPageChange(page - 1)} type="button">
-        Truoc
+        Trước
       </button>
       <strong>{page} / {pageCount}</strong>
       <button className="btn" disabled={page >= pageCount} onClick={() => onPageChange(page + 1)} type="button">
@@ -139,7 +155,7 @@ export function Pagination({
 export function ConfirmDialog({
   title,
   description,
-  confirmText = 'Xac nhan',
+  confirmText = 'Xác nhận',
   loading,
   onCancel,
   onConfirm,
@@ -157,7 +173,7 @@ export function ConfirmDialog({
         <h2 id="confirm-title">{title}</h2>
         <p>{description}</p>
         <div className="modal-actions">
-          <button className="btn" onClick={onCancel} disabled={loading} type="button">Huy</button>
+          <button className="btn" onClick={onCancel} disabled={loading} type="button">Hủy</button>
           <button className="btn danger" onClick={onConfirm} disabled={loading} type="button">
             {loading ? <Loader2 className="spin" size={16} /> : null}
             {confirmText}

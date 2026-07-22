@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell,
   ClipboardCheck,
@@ -14,23 +14,30 @@ import {
   Video,
 } from 'lucide-react';
 import { UserAvatar } from '../components/common';
+import { logout } from '../services/auth.service';
 
 const menu = [
-  { to: '/', label: 'Dashboard', icon: Home },
-  { to: '/users', label: 'Nguoi dung', icon: Users },
-  { to: '/identities', label: 'Xac thuc danh tinh', icon: ShieldCheck },
-  { to: '/posts', label: 'Bai viet', icon: FileText },
-  { to: '/videos', label: 'Video ngan', icon: Video },
-  { to: '/reports', label: 'Bao cao', icon: Flag },
+  { to: '/', label: 'Bảng điều khiển', icon: Home },
+  { to: '/users', label: 'Người dùng', icon: Users },
+  { to: '/identities', label: 'Xác thực danh tính', icon: ShieldCheck },
+  { to: '/posts', label: 'Bài viết', icon: FileText },
+  { to: '/videos', label: 'Video ngắn', icon: Video },
+  { to: '/reports', label: 'Báo cáo', icon: Flag },
   { to: '/hashtags', label: 'Hashtag', icon: Hash },
-  { to: '/chat-rooms', label: 'Phong chat', icon: MessageSquare },
-  { to: '/notifications', label: 'Thong bao he thong', icon: Bell },
-  { to: '/admin-logs', label: 'Nhat ky Admin', icon: ScrollText },
+  { to: '/chat-rooms', label: 'Phòng chat', icon: MessageSquare },
+  { to: '/notifications', label: 'Thông báo hệ thống', icon: Bell },
+  { to: '/admin-logs', label: 'Nhật ký quản trị', icon: ScrollText },
 ];
 
 export function AdminLayout() {
   const location = useLocation();
-  const current = menu.find((item) => item.to === location.pathname)?.label ?? 'Dashboard';
+  const navigate = useNavigate();
+  const current = menu.find((item) => item.to === location.pathname)?.label ?? 'Bảng điều khiển';
+
+  async function handleLogout() {
+    await logout();
+    navigate('/login', { replace: true });
+  }
 
   return (
     <div className="admin-shell">
@@ -50,16 +57,16 @@ export function AdminLayout() {
       </aside>
       <div className="main-panel">
         <header className="topbar">
-          <div className="breadcrumbs">Admin / {current}</div>
+          <div className="breadcrumbs">Quản trị / {current}</div>
           <div className="admin-profile">
             <UserAvatar name="Viora Admin" />
             <div>
               <strong>Viora Admin</strong>
-              <span>Super Admin</span>
+              <span>Quản trị viên cấp cao</span>
             </div>
-            <button className="btn ghost" type="button">
+            <button className="btn ghost" onClick={handleLogout} type="button">
               <LogOut size={16} />
-              Logout
+              Đăng xuất
             </button>
           </div>
         </header>

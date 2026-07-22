@@ -1,9 +1,9 @@
-import { apiClient } from './http';
-import type { AdminLog, ChatRoom, Hashtag, ListParams, NotificationPayload, PageResult } from '../types/admin';
+import { apiClient, normalizePageResult } from './http';
+import type { AdminLog, ChatRoom, Hashtag, ListParams, NotificationPayload } from '../types/admin';
 
 export async function getHashtags(params: ListParams) {
-  const { data } = await apiClient.get<PageResult<Hashtag>>('/api/admin/hashtags', { params });
-  return data;
+  const { data } = await apiClient.get<unknown>('/api/admin/hashtags', { params });
+  return normalizePageResult<Hashtag>(data);
 }
 
 export async function renameHashtag(id: string, name: string) {
@@ -16,13 +16,13 @@ export async function deleteHashtag(id: string) {
 }
 
 export async function getChatRooms(params: ListParams) {
-  const { data } = await apiClient.get<PageResult<ChatRoom>>('/api/admin/chat-rooms', { params });
-  return data;
+  const { data } = await apiClient.get<unknown>('/api/admin/chat-rooms', { params });
+  return normalizePageResult<ChatRoom>(data);
 }
 
 export async function getAdminLogs(params: ListParams) {
-  const { data } = await apiClient.get<PageResult<AdminLog>>('/api/admin/logs', { params });
-  return data;
+  const { data } = await apiClient.get<unknown>('/api/admin/logs', { params });
+  return normalizePageResult<AdminLog>(data);
 }
 
 export async function sendSystemNotification(payload: NotificationPayload) {
