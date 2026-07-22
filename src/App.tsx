@@ -1,15 +1,20 @@
+import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AdminLayout } from './layouts/AdminLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { UsersPage } from './pages/UsersPage';
+import { UserDetailPage } from './pages/UserDetailPage';
 import { IdentitiesPage } from './pages/IdentitiesPage';
-import { ContentPage } from './pages/ContentPage';
+import { PostsPage } from './pages/PostsPage';
+import { VideosPage } from './pages/VideosPage';
+import { VideoDetailPage } from './pages/VideoDetailPage';
+import { PostDetailPage } from './pages/PostDetailPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { AdminLogsPage, ChatRoomsPage, HashtagsPage, NotificationsPage } from './pages/MetaPages';
 import { LoginPage } from './pages/LoginPage';
-import { isAuthenticated, setupAuthInterceptors } from './services/auth.service';
+import { isAuthenticated, setupAuthInterceptors, subscribeAuthChange } from './services/auth.service';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,17 +25,28 @@ const queryClient = new QueryClient({
 setupAuthInterceptors();
 
 export default function App() {
+  const [authenticated, setAuthenticated] = useState(() => isAuthenticated());
+
+  useEffect(() => {
+    return subscribeAuthChange(() => setAuthenticated(isAuthenticated()));
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="login" element={<LoginPage />} />
-          <Route element={isAuthenticated() ? <AdminLayout /> : <Navigate to="/login" replace />}>
+          <Route path="login" element={authenticated ? <Navigate to="/" replace /> : <LoginPage onLogin={() => setAuthenticated(true)} />} />
+          <Route element={authenticated ? <AdminLayout onLogout={() => setAuthenticated(false)} /> : <Navigate to="/login" replace />}>
             <Route index element={<DashboardPage />} />
             <Route path="users" element={<UsersPage />} />
+            <Route path="users/:id" element={<UserDetailPage />} />
+            <Route path="admin/users/:id" element={<UserDetailPage />} />
             <Route path="identities" element={<IdentitiesPage />} />
-            <Route path="posts" element={<ContentPage type="posts" />} />
-            <Route path="videos" element={<ContentPage type="videos" />} />
+            <Route path="posts" element={<PostsPage />} />
+            <Route path="posts/:id" element={<PostDetailPage />} />
+            <Route path="admin/posts/:id" element={<PostDetailPage />} />
+            <Route path="videos" element={<VideosPage />} />
+            <Route path="admin/videos/:id" element={<VideoDetailPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="hashtags" element={<HashtagsPage />} />
             <Route path="chat-rooms" element={<ChatRoomsPage />} />

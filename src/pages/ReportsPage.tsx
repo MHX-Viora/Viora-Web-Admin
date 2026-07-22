@@ -1,61 +1,48 @@
-import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { DataTable, ErrorView, Loading, PageHeader, Pagination, SearchBox, StatusBadge, type Column } from '../components/common';
-import { useListState } from '../hooks/useListState';
+import { RefreshCw } from 'lucide-react';
+import { ErrorView, PageHeader } from '../components/common';
+import { ReportEmptyState } from '../components/ReportManagement/EmptyState';
+import { ReportTableSkeleton } from '../components/ReportManagement/LoadingSkeleton';
+import { ReportPagination } from '../components/ReportManagement/Pagination';
+import { ReportSortBar } from '../components/ReportManagement/SortBar';
+import { ReportTable } from '../components/ReportManagement/ReportTable';
+import { ReportToolbar } from '../components/ReportManagement/ReportToolbar';
+import { useReports } from '../hooks/useReports';
 import { getErrorMessage } from '../services/http';
-import { getReports, reviewReport } from '../services/admin-report.service';
-import type { Report } from '../types/admin';
-import { formatDate } from '../utils/format';
-
-const targetTypeLabels: Record<string, string> = {
-  post: 'Bài viết',
-  video: 'Video',
-  comment: 'Bình luận',
-  user: 'Người dùng',
-};
 
 export function ReportsPage() {
-  const list = useListState();
-  const [selected, setSelected] = useState<Report | null>(null);
-  const [action, setAction] = useState('hide_post');
-  const queryClient = useQueryClient();
-  const query = useQuery({ queryKey: ['reports', list.params], queryFn: () => getReports(list.params) });
-  const mutation = useMutation({
-    mutationFn: ({ status }: { status: 'approved' | 'rejected' }) => reviewReport(selected?.id ?? '', { status, action: status === 'approved' ? action : undefined }),
-    onSuccess: () => {
-      toast.success('Đã xử lý báo cáo');
-      setSelected(null);
-      void queryClient.invalidateQueries({ queryKey: ['reports'] });
-      void queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-    },
-    onError: (error) => toast.error(getErrorMessage(error)),
-  });
-  const columns: Column<Report>[] = [
-    { key: 'reporter', title: 'Người báo cáo', render: (item) => item.reporterName },
-    { key: 'target', title: 'Đối tượng', render: (item) => `${targetTypeLabels[item.targetType] ?? item.targetType}: ${item.targetLabel}` },
-    { key: 'reason', title: 'Lý do', render: (item) => item.reason },
-    { key: 'date', title: 'Ngày', render: (item) => formatDate(item.createdAt) },
-    { key: 'status', title: 'Trạng thái', render: (item) => <StatusBadge status={item.status} /> },
-  ];
+  const { query, state, update } = useReports();
+  const total = query.data?.total ?? 0;
+  const reports = query.data?.items ?? [];
+
   return (
-    <section>
-      <PageHeader title="Báo cáo" description="Xem chi tiết và quyết định hướng xử lý báo cáo." />
-      <div className="toolbar"><SearchBox value={list.search} onChange={list.setSearch} /></div>
-      {query.isLoading ? <Loading /> : null}
+    <section className="users-page">
+      <PageHeader
+        title="Quản lý Báo cáo"
+        description={`Tổng cộng ${total} báo cáo`}
+        actions={<button className="btn" onClick={() => void query.refetch()} type="button"><RefreshCw size={16} />Refresh</button>}
+      />
+      <ReportToolbar
+        status={state.status}
+        targetType={state.targetType}
+        reason={state.reason}
+        onFilter={(key, value) => update({ [key]: value, page: 1 })}
+      />
+      <ReportSortBar sortBy={state.sortBy} sortDirection={state.sortDirection} onSort={(sortBy, sortDirection) => update({ sortBy, sortDirection, page: 1 })} />
+
+      {query.isLoading ? <ReportTableSkeleton /> : null}
       {query.isError ? <ErrorView message={getErrorMessage(query.error)} onRetry={() => void query.refetch()} /> : null}
-      {query.data ? <><DataTable columns={columns} items={query.data.items} onRowClick={setSelected} /><Pagination page={list.page} pageSize={list.pageSize} total={query.data.total} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} /></> : null}
-      {selected ? (
-        <aside className="drawer">
-          <button className="drawer-close" onClick={() => setSelected(null)} type="button">Đóng</button>
-          <h2>{selected.targetLabel}</h2>
-          <p>{selected.reason}</p>
-          <div className="preview-box">{selected.content?.content ?? selected.user?.email ?? 'Không có bản xem trước'}</div>
-          <select value={action} onChange={(event) => setAction(event.target.value)}>
-            <option value="hide_post">Ẩn bài</option><option value="delete_post">Xóa bài</option><option value="lock_user">Khóa người dùng</option><option value="delete_comment">Xóa bình luận</option><option value="none">Không xử lý</option>
-          </select>
-          <div className="action-grid"><button className="btn primary" disabled={mutation.isPending} onClick={() => mutation.mutate({ status: 'approved' })} type="button">Duyệt</button><button className="btn" disabled={mutation.isPending} onClick={() => mutation.mutate({ status: 'rejected' })} type="button">Từ chối</button></div>
-        </aside>
+      {query.data && reports.length === 0 ? <ReportEmptyState /> : null}
+      {query.data && reports.length > 0 ? (
+        <>
+          <ReportTable reports={reports} />
+          <ReportPagination
+            page={state.page}
+            pageSize={state.pageSize}
+            total={total}
+            onPage={(page) => update({ page })}
+            onPageSize={(pageSize) => update({ pageSize, page: 1 })}
+          />
+        </>
       ) : null}
     </section>
   );

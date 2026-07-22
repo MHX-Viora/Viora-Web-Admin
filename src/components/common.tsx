@@ -24,9 +24,12 @@ const statusLabels: Record<string, string> = {
   hidden: 'Đã ẩn',
   deleted: 'Đã xóa',
   resolved: 'Đã xử lý',
+  0: 'Chưa kích hoạt',
+  1: 'Đang hoạt động',
+  2: 'Đã khóa',
 };
 
-export function getStatusLabel(status: Status | string) {
+export function getStatusLabel(status: Status | string | number) {
   return statusLabels[status] ?? status;
 }
 
@@ -72,7 +75,7 @@ export function ErrorView({ message, onRetry }: { message: string; onRetry: () =
   );
 }
 
-export function StatusBadge({ status }: { status: Status | string }) {
+export function StatusBadge({ status }: { status: Status | string | number }) {
   return <span className={`status-badge ${status}`}>{getStatusLabel(status)}</span>;
 }
 

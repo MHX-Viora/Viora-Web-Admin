@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import type { ListParams } from '../types/admin';
 
-export function useListState() {
+export function useListState(defaultPageSize = 10) {
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [sort, setSort] = useState('');

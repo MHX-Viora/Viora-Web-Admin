@@ -29,13 +29,14 @@ const menu = [
   { to: '/admin-logs', label: 'Nhật ký quản trị', icon: ScrollText },
 ];
 
-export function AdminLayout() {
+export function AdminLayout({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
   const current = menu.find((item) => item.to === location.pathname)?.label ?? 'Bảng điều khiển';
 
   async function handleLogout() {
     await logout();
+    onLogout();
     navigate('/login', { replace: true });
   }
 

@@ -1,16 +1,14 @@
 import { useState, type FormEvent } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LockKeyhole, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
-import { isAuthenticated, login } from '../services/auth.service';
+import { login } from '../services/auth.service';
 
-export function LoginPage() {
+export function LoginPage({ onLogin }: { onLogin: () => void }) {
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
-  if (isAuthenticated()) return <Navigate to="/" replace />;
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -18,6 +16,7 @@ export function LoginPage() {
 
     try {
       await login({ identifier, password });
+      onLogin();
       toast.success('Đăng nhập thành công');
       navigate('/', { replace: true });
     } catch (error) {

@@ -12,6 +12,8 @@ export type ListParams = {
   pageSize: number;
   search?: string;
   status?: string;
+  identityStatus?: string;
+  isVerified?: string;
   sort?: string;
 };
 
@@ -20,7 +22,9 @@ export type DashboardStats = {
   newUsersToday: number;
   activeUsersToday: number;
   totalPosts: number;
+  todayPosts: number;
   totalVideos: number;
+  todayVideos: number;
   totalComments: number;
   chatRooms: number;
   pendingReports: number;
@@ -29,12 +33,16 @@ export type DashboardStats = {
 
 export type User = {
   id: string;
+  accountId?: string;
   avatarUrl?: string;
   coverUrl?: string;
   name: string;
   email: string;
   phone?: string;
-  status: Status;
+  role?: number;
+  status: Status | string | number;
+  identityStatus?: number;
+  identity?: Identity | null;
   verified: boolean;
   identityNumber?: string;
   postCount: number;
@@ -42,18 +50,27 @@ export type User = {
   followerCount: number;
   followingCount: number;
   friendCount: number;
+  reportCount: number;
   createdAt: string;
   lastLoginAt?: string;
 };
 
 export type Identity = {
   id: string;
-  userName: string;
-  identityNumber: string;
+  userId?: string;
+  userName?: string;
+  displayName?: string;
+  avatarUrl?: string;
+  fullName?: string;
+  birthday?: string;
+  identityNumber?: string;
   frontImageUrl?: string;
   backImageUrl?: string;
-  submittedAt: string;
-  status: Status;
+  rejectReason?: string;
+  createdAt?: string;
+  reviewedAt?: string;
+  submittedAt?: string;
+  status: Status | string | number;
 };
 
 export type ContentItem = {

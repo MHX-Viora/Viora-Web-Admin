@@ -11,7 +11,8 @@ export const apiClient = axios.create({
 
 export function getErrorMessage(error: unknown) {
   if (axios.isAxiosError(error)) {
-    const message = (error.response?.data as { message?: string } | undefined)?.message;
+    const data = parseErrorData(error.response?.data);
+    const message = typeof data === 'object' && data && 'message' in data ? String(data.message) : undefined;
     return message ?? error.message;
   }
 
@@ -22,14 +23,26 @@ export function getErrorMessage(error: unknown) {
   return 'Đã có lỗi xảy ra';
 }
 
+function parseErrorData(data: unknown) {
+  if (typeof data !== 'string') return data;
+
+  try {
+    return JSON.parse(data) as unknown;
+  } catch {
+    return { message: data };
+  }
+}
+
 export function normalizePageResult<T>(value: unknown): PageResult<T> {
-  if (Array.isArray(value)) {
-    return { items: value as T[], total: value.length, page: 1, pageSize: value.length };
+  const pageValue = unwrapPageValue(value);
+
+  if (Array.isArray(pageValue)) {
+    return { items: pageValue as T[], total: pageValue.length, page: 1, pageSize: pageValue.length };
   }
 
-  if (value && typeof value === 'object') {
-    const record = value as Record<string, unknown>;
-    const items = pickArray<T>(record, ['items', 'data', 'content', 'results']);
+  if (pageValue && typeof pageValue === 'object') {
+    const record = pageValue as Record<string, unknown>;
+    const items = pickArray<T>(record, ['items', 'content', 'results', 'data']);
     const total = pickNumber(record, ['total', 'totalItems', 'totalElements', 'count'], items.length);
     const page = pickNumber(record, ['page', 'currentPage'], 1);
     const pageSize = pickNumber(record, ['pageSize', 'limit', 'size', 'perPage'], items.length);
@@ -38,6 +51,16 @@ export function normalizePageResult<T>(value: unknown): PageResult<T> {
   }
 
   return { items: [], total: 0, page: 1, pageSize: 0 };
+}
+
+function unwrapPageValue(value: unknown) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+
+  const record = value as Record<string, unknown>;
+  const payload = record.data;
+  if (payload && typeof payload === 'object') return payload;
+
+  return value;
 }
 
 function pickArray<T>(record: Record<string, unknown>, keys: string[]) {
