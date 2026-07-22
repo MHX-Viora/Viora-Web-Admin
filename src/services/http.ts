@@ -1,0 +1,21 @@
+import axios from 'axios';
+
+export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export function getErrorMessage(error: unknown) {
+  if (axios.isAxiosError(error)) {
+    const message = (error.response?.data as { message?: string } | undefined)?.message;
+    return message ?? error.message;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Da co loi xay ra';
+}
