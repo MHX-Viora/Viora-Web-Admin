@@ -53,9 +53,9 @@ export function UserProfileCard({
             <button className="btn primary" disabled={actionLoading} onClick={onVerify} type="button"><BadgeCheck size={16} />Xác thực</button>
           )}
           {isBanned ? (
-            <button className="btn primary" disabled={actionLoading} onClick={onUnban} type="button"><Unlock size={16} />Gỡ ban</button>
+            <button className="btn primary" disabled={actionLoading} onClick={onUnban} type="button"><Unlock size={16} />Mở khóa</button>
           ) : (
-            <button className="btn danger" disabled={actionLoading} onClick={onBan} type="button"><ShieldOff size={16} />Ban người dùng</button>
+            <button className="btn danger" disabled={actionLoading} onClick={onBan} type="button"><ShieldOff size={16} />Khóa người dùng</button>
           )}
           <button className="btn danger" disabled={actionLoading} onClick={onDelete} type="button"><Trash2 size={16} />Xóa người dùng</button>
         </div>

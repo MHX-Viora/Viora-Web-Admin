@@ -13,7 +13,8 @@ export function getErrorMessage(error: unknown) {
   if (axios.isAxiosError(error)) {
     const data = parseErrorData(error.response?.data);
     const message = typeof data === 'object' && data && 'message' in data ? String(data.message) : undefined;
-    return message ?? error.message;
+    const traceId = typeof data === 'object' && data && 'traceId' in data ? String(data.traceId) : undefined;
+    return [message ?? error.message, traceId ? `TraceId: ${traceId}` : undefined].filter(Boolean).join(' ');
   }
 
   if (error instanceof Error) {
@@ -31,6 +32,13 @@ function parseErrorData(data: unknown) {
   } catch {
     return { message: data };
   }
+}
+
+export function unwrapApiData<T>(value: unknown): T {
+  if (!value || typeof value !== 'object') return value as T;
+
+  const record = value as Record<string, unknown>;
+  return (record.data ?? value) as T;
 }
 
 export function normalizePageResult<T>(value: unknown): PageResult<T> {
@@ -56,11 +64,7 @@ export function normalizePageResult<T>(value: unknown): PageResult<T> {
 function unwrapPageValue(value: unknown) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
 
-  const record = value as Record<string, unknown>;
-  const payload = record.data;
-  if (payload && typeof payload === 'object') return payload;
-
-  return value;
+  return unwrapApiData(value);
 }
 
 function pickArray<T>(record: Record<string, unknown>, keys: string[]) {

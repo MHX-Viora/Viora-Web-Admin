@@ -81,7 +81,7 @@ export async function login(payload: LoginPayload) {
   }
 
   const { data } = await authClient.post<unknown>('/api/accounts/login', { identifier, password });
-  const result = parseApiData<LoginResponse>(data);
+  const result = unwrapApiData<LoginResponse>(parseApiData(data));
 
   if (result.status !== 1 || !result.accessToken || !result.user) {
     throw new Error('Phản hồi đăng nhập không hợp lệ');
@@ -152,7 +152,7 @@ export function setupAuthInterceptors(client: AxiosInstance = apiClient) {
       try {
         const token = await refreshAccessToken();
         config.headers.Authorization = `Bearer ${token}`;
-        return client(config);
+        return client.request(config);
       } catch (refreshError) {
         clearSession();
         return Promise.reject(refreshError);

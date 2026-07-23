@@ -1,4 +1,4 @@
-import { apiClient, normalizePageResult } from './http';
+import { apiClient, normalizePageResult, unwrapApiData } from './http';
 import type { AdminVideo, AdminVideoDetail, VideoListParams } from '../types/admin-video';
 
 type ApiVideo = Partial<AdminVideo> & {
@@ -23,6 +23,13 @@ export async function getAdminVideos(params: VideoListParams) {
 export async function getAdminVideo(id: string) {
   const { data } = await apiClient.get<unknown>(`/api/admin/videos/${id}`);
   return mapVideoDetail(unwrapApiData<ApiVideo>(data));
+}
+
+export async function moderateAdminVideo(id: string, action: 'hide' | 'restore' | 'delete') {
+  const { data } = action === 'delete'
+    ? await apiClient.delete<unknown>(`/api/admin/videos/${id}`)
+    : await apiClient.patch<unknown>(`/api/admin/videos/${id}/${action}`);
+  return unwrapApiData(data);
 }
 
 function mapVideo(video: ApiVideo): AdminVideo {
@@ -52,11 +59,4 @@ function mapVideoDetail(video: ApiVideo): AdminVideoDetail {
     media: video.media ?? [],
     hashtags: video.hashtags ?? [],
   };
-}
-
-function unwrapApiData<T>(value: unknown) {
-  if (!value || typeof value !== 'object') return value as T;
-
-  const record = value as Record<string, unknown>;
-  return (record.data ?? value) as T;
 }

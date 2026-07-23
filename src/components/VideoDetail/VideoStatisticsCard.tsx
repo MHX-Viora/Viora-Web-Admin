@@ -3,12 +3,12 @@ import type { AdminVideoDetail } from '../../types/admin-video';
 import { formatNumber } from '../../utils/format';
 
 const stats = [
-  ['reactionCount', 'Reaction', Heart],
-  ['commentCount', 'Comment', MessageCircle],
-  ['shareCount', 'Share', Repeat2],
-  ['saveCount', 'Save', Bookmark],
-  ['viewCount', 'View', Eye],
-  ['reportCount', 'Report', Flag],
+  ['reactionCount', 'Tương tác', Heart],
+  ['commentCount', 'Bình luận', MessageCircle],
+  ['shareCount', 'Chia sẻ', Repeat2],
+  ['saveCount', 'Lượt lưu', Bookmark],
+  ['viewCount', 'Lượt xem', Eye],
+  ['reportCount', 'Báo cáo', Flag],
 ] as const;
 
 export function VideoStatisticsCard({ video }: { video: AdminVideoDetail }) {

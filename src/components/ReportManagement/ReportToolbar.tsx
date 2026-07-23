@@ -1,4 +1,4 @@
-import { reasonLabels, statusLabels, targetLabels } from './ReportBadges';
+import { reasonLabels, reportStatusLabels, targetLabels } from './report-labels';
 
 type Props = {
   status: string;
@@ -10,7 +10,7 @@ type Props = {
 export function ReportToolbar({ status, targetType, reason, onFilter }: Props) {
   return (
     <div className="report-toolbar">
-      <FilterSelect label="Trạng thái" value={status} onChange={(value) => onFilter('status', value)} options={toOptions(statusLabels)} />
+      <FilterSelect label="Trạng thái" value={status} onChange={(value) => onFilter('status', value)} options={toOptions(reportStatusLabels)} />
       <FilterSelect label="Đối tượng bị báo cáo" value={targetType} onChange={(value) => onFilter('targetType', value)} options={toOptions(targetLabels)} />
       <FilterSelect label="Lý do báo cáo" value={reason} onChange={(value) => onFilter('reason', value)} options={toOptions(reasonLabels)} />
     </div>

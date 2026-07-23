@@ -1,4 +1,4 @@
-import { apiClient, normalizePageResult } from './http';
+import { apiClient, normalizePageResult, unwrapApiData } from './http';
 import type { AdminPost, AdminPostDetail, PostListParams } from '../types/admin-post';
 
 type ApiPost = Partial<AdminPost> & {
@@ -29,6 +29,13 @@ export async function getAdminPost(id: string) {
   return mapPostDetail(unwrapApiData<ApiPost>(data));
 }
 
+export async function moderateAdminPost(id: string, action: 'hide' | 'restore' | 'delete') {
+  const { data } = action === 'delete'
+    ? await apiClient.delete<unknown>(`/api/admin/posts/${id}`)
+    : await apiClient.patch<unknown>(`/api/admin/posts/${id}/${action}`);
+  return unwrapApiData(data);
+}
+
 function mapPost(post: ApiPost): AdminPost {
   return {
     id: post.id ?? '',
@@ -56,11 +63,4 @@ function mapPostDetail(post: ApiPost): AdminPostDetail {
     media: post.media ?? [],
     hashtags: post.hashtags ?? [],
   };
-}
-
-function unwrapApiData<T>(value: unknown) {
-  if (!value || typeof value !== 'object') return value as T;
-
-  const record = value as Record<string, unknown>;
-  return (record.data ?? value) as T;
 }

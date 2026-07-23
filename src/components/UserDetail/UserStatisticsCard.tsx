@@ -6,9 +6,9 @@ const statConfig = [
   ['postCount', 'Bài viết', FileText],
   ['videoCount', 'Video', Video],
   ['friendCount', 'Bạn bè', UserRoundCheck],
-  ['followerCount', 'Follower', Users],
-  ['followingCount', 'Following', Users],
-  ['reportCount', 'Report', Flag],
+  ['followerCount', 'Người theo dõi', Users],
+  ['followingCount', 'Đang theo dõi', Users],
+  ['reportCount', 'Báo cáo', Flag],
 ] as const;
 
 export function UserStatisticsCard({ user }: { user: AdminUserDetail }) {

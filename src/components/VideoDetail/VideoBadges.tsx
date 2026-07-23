@@ -1,5 +1,5 @@
-const statusLabels: Record<number, string> = { 0: 'Draft', 1: 'Published', 2: 'Hidden', 3: 'Deleted' };
-const visibilityLabels: Record<number, string> = { 0: 'Public', 1: 'Followers', 2: 'Private' };
+const statusLabels: Record<number, string> = { 0: 'Bản nháp', 1: 'Đã đăng', 2: 'Đã ẩn', 3: 'Đã xóa' };
+const visibilityLabels: Record<number, string> = { 0: 'Công khai', 1: 'Người theo dõi', 2: 'Riêng tư' };
 
 export function VideoTypeBadge() {
   return <span className="post-badge post-type-1">Video ngắn</span>;

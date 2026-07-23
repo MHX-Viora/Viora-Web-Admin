@@ -1,4 +1,4 @@
-export type Status = 'active' | 'inactive' | 'locked' | 'pending' | 'approved' | 'rejected' | 'hidden' | 'deleted' | 'resolved';
+export type Status = 'active' | 'inactive' | 'locked' | 'pending' | 'approved' | 'rejected' | 'hidden' | 'deleted' | 'resolved' | number;
 
 export type PageResult<T> = {
   items: T[];

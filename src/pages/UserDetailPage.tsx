@@ -78,7 +78,7 @@ export function UserDetailPage() {
 
     if (confirmAction.type === 'ban') {
       if (!reason.trim()) {
-        toast.error('Vui lòng nhập lý do ban.');
+        toast.error('Vui lòng nhập lý do khóa.');
         return;
       }
       statusMutation.mutate({ status: 0, reason: reason.trim() });
@@ -103,9 +103,9 @@ export function UserDetailPage() {
   return (
     <section className="user-detail-page">
       <div className="breadcrumb-row">
-        <Link to="/">Dashboard</Link>
+        <Link to="/">Bảng điều khiển</Link>
         <span>/</span>
-        <Link to="/users">Users</Link>
+        <Link to="/users">Người dùng</Link>
         <span>/</span>
         <strong>{user.name}</strong>
       </div>
@@ -114,11 +114,11 @@ export function UserDetailPage() {
         <UserProfileCard
           user={user}
           actionLoading={loading}
-          onBan={() => setConfirmAction({ type: 'ban', title: 'Ban người dùng', description: 'Người dùng sẽ bị khóa và không thể tiếp tục sử dụng tài khoản.', requireReason: true, confirmText: 'Ban người dùng', danger: true })}
-          onUnban={() => setConfirmAction({ type: 'unban', title: 'Gỡ ban người dùng', description: 'Tài khoản sẽ được chuyển về trạng thái Active.', confirmText: 'Gỡ ban' })}
-          onDelete={() => setConfirmAction({ type: 'delete', title: 'Xóa người dùng', description: 'Tài khoản sẽ chuyển sang trạng thái Deleted. Dữ liệu không bị xóa cứng.', confirmText: 'Xóa người dùng', danger: true })}
+          onBan={() => setConfirmAction({ type: 'ban', title: 'Khóa người dùng', description: 'Người dùng sẽ bị khóa và không thể tiếp tục sử dụng tài khoản.', requireReason: true, confirmText: 'Khóa người dùng', danger: true })}
+          onUnban={() => setConfirmAction({ type: 'unban', title: 'Mở khóa người dùng', description: 'Tài khoản sẽ được chuyển về trạng thái đang hoạt động.', confirmText: 'Mở khóa' })}
+          onDelete={() => setConfirmAction({ type: 'delete', title: 'Xóa người dùng', description: 'Tài khoản sẽ chuyển sang trạng thái đã xóa. Dữ liệu không bị xóa cứng.', confirmText: 'Xóa người dùng', danger: true })}
           onVerify={() => setConfirmAction({ type: 'verify', title: 'Xác thực người dùng', description: 'Người dùng sẽ được đánh dấu đã xác thực.', confirmText: 'Xác thực' })}
-          onUnverify={() => setConfirmAction({ type: 'unverify', title: 'Hủy xác thực người dùng', description: 'Tick xác thực của người dùng sẽ bị thu hồi.', confirmText: 'Hủy xác thực', danger: true })}
+          onUnverify={() => setConfirmAction({ type: 'unverify', title: 'Hủy xác thực người dùng', description: 'Dấu xác thực của người dùng sẽ bị thu hồi.', confirmText: 'Hủy xác thực', danger: true })}
         />
         <UserStatisticsCard user={user} />
         <IdentityCard user={user} onPreview={setPreviewImage} />
@@ -130,7 +130,7 @@ export function UserDetailPage() {
             <h2>{confirmAction.title}</h2>
             <p>{confirmAction.description}</p>
             {confirmAction.type === 'ban' ? (
-              <label className="field-label">Lý do ban
+              <label className="field-label">Lý do khóa
                 <textarea value={reason} onChange={(event) => setReason(event.target.value)} required />
               </label>
             ) : null}

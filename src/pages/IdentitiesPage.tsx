@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { DataTable, ErrorView, Loading, PageHeader, Pagination, SearchBox, StatusBadge, getStatusLabel, type Column } from '../components/common';
+import { DataTable, ErrorView, Loading, PageHeader, Pagination, SearchBox, StatusBadge, type Column } from '../components/common';
+import { getStatusLabel } from '../utils/status-labels';
 import { useListState } from '../hooks/useListState';
 import { getErrorMessage } from '../services/http';
 import { getIdentities, reviewIdentity } from '../services/admin-identity.service';

@@ -29,7 +29,7 @@ const statusLabels: Record<string, string> = {
   2: 'Đã khóa',
 };
 
-export function getStatusLabel(status: Status | string | number) {
+function getStatusLabel(status: Status | string | number) {
   return statusLabels[status] ?? status;
 }
 
@@ -135,14 +135,17 @@ export function Pagination({
   onPageSizeChange: (pageSize: number) => void;
 }) {
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const end = Math.min(total, page * pageSize);
 
   return (
     <div className="pagination">
-      <span>{total} kết quả</span>
+      <span>Đang hiển thị {start}-{end} trên tổng {total}</span>
       <select value={pageSize} onChange={(event) => onPageSizeChange(Number(event.target.value))}>
         <option value={10}>10 / trang</option>
         <option value={20}>20 / trang</option>
         <option value={50}>50 / trang</option>
+        <option value={100}>100 / trang</option>
       </select>
       <button className="btn" disabled={page <= 1} onClick={() => onPageChange(page - 1)} type="button">
         Trước

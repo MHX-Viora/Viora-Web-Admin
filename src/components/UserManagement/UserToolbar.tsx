@@ -14,9 +14,9 @@ export function UserToolbar({ keywordDraft, status, identityStatus, isVerified, 
   return (
     <div className="user-toolbar">
       <UserSearchBox value={keywordDraft} onDraftChange={onDraftChange} onSearch={onSearch} />
-      <FilterSelect label="Status" value={status} onChange={(value) => onFilter('status', value)} options={[['', 'Tất cả'], ['1', 'Active'], ['0', 'Banned'], ['2', 'Deleted']]} />
-      <FilterSelect label="Identity" value={identityStatus} onChange={(value) => onFilter('identityStatus', value)} options={[['', 'Tất cả'], ['1', 'Pending'], ['2', 'Approved'], ['3', 'Rejected']]} />
-      <FilterSelect label="Verified" value={isVerified} onChange={(value) => onFilter('isVerified', value)} options={[['', 'Tất cả'], ['true', 'Đã xác thực'], ['false', 'Chưa xác thực']]} />
+      <FilterSelect label="Trạng thái" value={status} onChange={(value) => onFilter('status', value)} options={[['', 'Tất cả'], ['1', 'Đang hoạt động'], ['0', 'Đã khóa'], ['2', 'Đã xóa']]} />
+      <FilterSelect label="Định danh" value={identityStatus} onChange={(value) => onFilter('identityStatus', value)} options={[['', 'Tất cả'], ['1', 'Chờ duyệt'], ['2', 'Đã duyệt'], ['3', 'Từ chối']]} />
+      <FilterSelect label="Xác thực" value={isVerified} onChange={(value) => onFilter('isVerified', value)} options={[['', 'Tất cả'], ['true', 'Đã xác thực'], ['false', 'Chưa xác thực']]} />
     </div>
   );
 }

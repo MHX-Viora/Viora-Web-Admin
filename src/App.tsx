@@ -12,6 +12,7 @@ import { VideosPage } from './pages/VideosPage';
 import { VideoDetailPage } from './pages/VideoDetailPage';
 import { PostDetailPage } from './pages/PostDetailPage';
 import { ReportsPage } from './pages/ReportsPage';
+import { ReportDetailPage } from './pages/ReportDetailPage';
 import { AdminLogsPage, ChatRoomsPage, HashtagsPage, NotificationsPage } from './pages/MetaPages';
 import { LoginPage } from './pages/LoginPage';
 import { isAuthenticated, setupAuthInterceptors, subscribeAuthChange } from './services/auth.service';
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="videos" element={<VideosPage />} />
             <Route path="admin/videos/:id" element={<VideoDetailPage />} />
             <Route path="reports" element={<ReportsPage />} />
+            <Route path="admin/reports/:id" element={<ReportDetailPage />} />
             <Route path="hashtags" element={<HashtagsPage />} />
             <Route path="chat-rooms" element={<ChatRoomsPage />} />
             <Route path="notifications" element={<NotificationsPage />} />

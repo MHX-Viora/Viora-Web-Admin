@@ -14,11 +14,11 @@ export function VideoToolbar({ keywordDraft, status, reported, userId, onDraftCh
   return (
     <div className="video-toolbar">
       <PostSearchBox value={keywordDraft} onDraftChange={onDraftChange} onSearch={onSearch} />
-      <FilterSelect label="Trạng thái" value={status} onChange={(value) => onFilter('status', value)} options={[['', 'Tất cả'], ['0', 'Draft'], ['1', 'Published'], ['2', 'Hidden'], ['3', 'Deleted']]} />
+      <FilterSelect label="Trạng thái" value={status} onChange={(value) => onFilter('status', value)} options={[['', 'Tất cả'], ['0', 'Bản nháp'], ['1', 'Đã đăng'], ['2', 'Đã ẩn'], ['3', 'Đã xóa']]} />
       <FilterSelect label="Báo cáo" value={reported} onChange={(value) => onFilter('reported', value)} options={[['', 'Tất cả'], ['true', 'Có báo cáo'], ['false', 'Không có báo cáo']]} />
       <label className="filter-select post-user-filter">
         <span>Người đăng</span>
-        <input value={userId} onChange={(event) => onFilter('userId', event.target.value)} placeholder="UserId" />
+        <input value={userId} onChange={(event) => onFilter('userId', event.target.value)} placeholder="ID người dùng" />
       </label>
     </div>
   );

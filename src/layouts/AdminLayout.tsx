@@ -45,9 +45,9 @@ export function AdminLayout({ onLogout }: { onLogout: () => void }) {
       <aside className="sidebar">
         <div className="brand">
           <ClipboardCheck size={24} />
-          <span>Viora</span>
+          <span>Viora Admin</span>
         </div>
-        <nav>
+        <nav aria-label="Admin navigation">
           {menu.map(({ to, label, icon: Icon }) => (
             <NavLink key={to} to={to} end={to === '/'}>
               <Icon size={18} />
