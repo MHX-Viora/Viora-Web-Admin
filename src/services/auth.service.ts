@@ -154,7 +154,7 @@ export function setupAuthInterceptors(client: AxiosInstance = apiClient) {
         config.headers.Authorization = `Bearer ${token}`;
         return client.request(config);
       } catch (refreshError) {
-        clearSession();
+        expireSession();
         return Promise.reject(refreshError);
       }
     },
@@ -177,6 +177,14 @@ function clearSession() {
   localStorage.removeItem(USER_KEY);
   delete apiClient.defaults.headers.common.Authorization;
   emitAuthChange();
+}
+
+function expireSession() {
+  clearSession();
+
+  if (window.location.pathname !== '/login') {
+    window.location.replace('/login');
+  }
 }
 
 function emitAuthChange() {
