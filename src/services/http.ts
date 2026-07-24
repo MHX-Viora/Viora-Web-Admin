@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { PageResult } from '../types/admin';
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
+  baseURL: import.meta.env.VITE_API_BASE_URL?.trim() ?? '',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

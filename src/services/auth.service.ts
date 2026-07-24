@@ -40,7 +40,7 @@ let refreshPromise: Promise<string> | null = null;
 let interceptorsReady = false;
 
 const authClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
+  baseURL: import.meta.env.VITE_API_BASE_URL?.trim() ?? '',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
