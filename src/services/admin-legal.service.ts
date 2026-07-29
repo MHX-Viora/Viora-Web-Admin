@@ -10,6 +10,9 @@ export type LegalInput = Pick<LegalDocument, 'type' | 'title' | 'summary' | 'lan
 export async function getLegalDocuments() {
   return unwrapApiData<LegalDocument[]>((await apiClient.get('/api/admin/legal')).data);
 }
+export async function getPublishedLegalDocuments() {
+  return unwrapApiData<LegalDocument[]>((await apiClient.get('/api/legal')).data);
+}
 export async function getLegalDocument(id: string) {
   return unwrapApiData<LegalDocument>((await apiClient.get(`/api/admin/legal/${id}`)).data);
 }
