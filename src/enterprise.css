@@ -678,6 +678,197 @@ td .btn,
   }
 }
 
+/* Sidebar stabilization */
+.sidebar {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.brand {
+  position: relative;
+  flex: none;
+  min-width: 0;
+  margin-bottom: 0;
+  padding: 2px 50px 18px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.brand-mark svg {
+  width: 21px;
+  height: 21px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: currentColor;
+}
+
+.brand-copy {
+  overflow: hidden;
+}
+
+.brand-copy strong,
+.brand-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 4px;
+  right: 0;
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  margin: 0;
+  border-color: rgba(255, 255, 255, .14);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.sidebar-toggle svg {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: currentColor;
+}
+
+.sidebar nav {
+  min-height: 0;
+  margin: 10px -6px 0 0;
+  padding: 4px 6px 12px 0;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.sidebar nav::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-group {
+  gap: 3px;
+}
+
+.nav-group + .nav-group {
+  margin-top: 4px;
+}
+
+.nav-group-label {
+  padding-bottom: 4px;
+}
+
+.sidebar a {
+  min-height: 43px;
+}
+
+.sidebar-footer {
+  flex: none;
+  min-height: 76px;
+  margin-top: 0;
+  padding: 14px 8px 2px;
+  background: var(--sidebar-bg);
+}
+
+.sidebar-footer strong {
+  font-size: 14px;
+}
+
+.sidebar-collapsed .brand {
+  min-height: 86px;
+  padding: 2px 0 18px;
+}
+
+.sidebar-collapsed .sidebar-toggle {
+  top: 54px;
+  right: 50%;
+  width: 30px;
+  height: 30px;
+  transform: translate(50%, 0);
+}
+
+.sidebar-collapsed .sidebar-toggle:hover {
+  transform: translate(50%, -1px);
+}
+
+.sidebar-collapsed .sidebar a:hover {
+  transform: none;
+}
+
+@media (max-height: 780px) and (min-width: 961px) {
+  .sidebar {
+    padding-block: 12px;
+  }
+
+  .brand {
+    min-height: 56px;
+    padding-bottom: 12px;
+  }
+
+  .sidebar nav {
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .sidebar a {
+    min-height: 39px;
+  }
+
+  .sidebar-footer {
+    min-height: 66px;
+    padding-top: 10px;
+  }
+}
+
+@media (max-width: 960px) {
+  .brand {
+    padding-right: 4px;
+  }
+}
+
+/* Compact table typography */
+table,
+.user-table {
+  font-size: 13px;
+}
+
+th,
+.user-table th {
+  font-size: 12px;
+}
+
+td,
+.user-table td,
+td strong,
+.user-table td strong,
+.user-name-cell strong,
+.post-author-cell strong,
+.post-content-clamp,
+.line-clamp,
+.date-cell strong,
+.date-cell span {
+  font-size: 13px;
+}
+
+.user-name-cell span,
+.post-author-cell span,
+td small,
+.user-table td small {
+  font-size: 11px;
+}
+
+td .status-badge,
+td .detail-badge,
+td .post-badge,
+td .report-badge,
+td .verified-badge,
+.user-table td .status-badge,
+.user-table td .detail-badge {
+  min-height: 22px;
+  padding: 1px 7px;
+  font-size: 11px;
+}
+
 @media (max-width: 960px) {
   .admin-shell,
   .admin-shell.sidebar-collapsed {
