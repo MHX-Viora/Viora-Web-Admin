@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { FilePlus2, RefreshCw } from 'lucide-react';
+import { Eye, FilePlus2, RefreshCw, X } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 import {
@@ -24,12 +24,14 @@ function DocumentCards({
   onDelete,
   onPublish,
   onVersion,
+  onView,
 }: {
   documents: LegalDocument[];
   management?: boolean;
   onDelete?: (id: string) => void;
   onPublish?: (id: string) => void;
   onVersion?: (id: string) => void;
+  onView?: (id: string) => void;
 }) {
   return (
     <div className="legal-document-grid">
@@ -50,10 +52,11 @@ function DocumentCards({
             <div><dt>Ngôn ngữ</dt><dd>{document.languageCode}</dd></div>
             <div><dt>Cập nhật</dt><dd>{new Date(document.updatedAt).toLocaleString('vi-VN')}</dd></div>
           </dl>
-          {management && (
+          {(management || onView) && (
             <div className="legal-actions">
-              <button className="btn" onClick={() => onVersion?.(document.id)} type="button">Tạo phiên bản mới</button>
-              {!document.isPublished && (
+              {onView && <button className="btn" onClick={() => onView(document.id)} type="button"><Eye size={15} /> Xem chi tiết</button>}
+              {management && <button className="btn" onClick={() => onVersion?.(document.id)} type="button">Tạo phiên bản mới</button>}
+              {management && !document.isPublished && (
                 <>
                   <button className="btn primary" onClick={() => onPublish?.(document.id)} type="button">Công bố</button>
                   <button className="btn danger" onClick={() => onDelete?.(document.id)} type="button">Xóa</button>
@@ -72,8 +75,14 @@ export function LegalDocumentsPage() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [sourceId, setSourceId] = useState<string | null>(null);
   const [form, setForm] = useState<LegalInput>(empty);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const history = useQuery({ queryKey: ['legal-documents'], queryFn: getLegalDocuments, refetchOnMount: 'always', staleTime: 0 });
   const active = useQuery({ queryKey: ['published-legal-documents'], queryFn: getPublishedLegalDocuments, refetchOnMount: 'always', staleTime: 0 });
+  const detail = useQuery({
+    queryKey: ['legal-document-detail', detailId],
+    queryFn: () => getLegalDocument(detailId ?? ''),
+    enabled: Boolean(detailId),
+  });
   const refresh = async () => {
     await Promise.all([
       client.invalidateQueries({ queryKey: ['legal-documents'] }),
@@ -94,7 +103,11 @@ export function LegalDocumentsPage() {
   const action = useMutation({
     mutationFn: ({ id, kind }: { id: string; kind: 'publish' | 'delete' }) =>
       kind === 'publish' ? publishLegalDocument(id) : deleteLegalDocument(id),
-    onSuccess: () => { toast.success('Đã cập nhật tài liệu.'); void refresh(); },
+    onSuccess: () => {
+      toast.success('Đã cập nhật trạng thái tài liệu.');
+      setDetailId(null);
+      void refresh();
+    },
     onError: (error) => toast.error(getErrorMessage(error)),
   });
   async function versionFrom(id: string) {
@@ -135,7 +148,7 @@ export function LegalDocumentsPage() {
 
       <section className="legal-section">
         <div className="legal-section-heading"><div><h2>Đang hoạt động</h2><p>{activeDocuments.length} tài liệu đã công bố</p></div><button aria-label="Tải lại tài liệu đang hoạt động" className="btn ghost" onClick={() => void active.refetch()} type="button"><RefreshCw size={16} /></button></div>
-        {active.isLoading ? <p>Đang tải…</p> : active.isError ? <p role="alert">{getErrorMessage(active.error)}</p> : activeDocuments.length ? <DocumentCards documents={activeDocuments} /> : <p>Chưa có tài liệu nào được công bố.</p>}
+        {active.isLoading ? <p>Đang tải…</p> : active.isError ? <p role="alert">{getErrorMessage(active.error)}</p> : activeDocuments.length ? <DocumentCards documents={activeDocuments} onView={setDetailId} /> : <p>Chưa có tài liệu nào được công bố.</p>}
       </section>
 
       <section className="legal-section">
@@ -147,9 +160,51 @@ export function LegalDocumentsPage() {
             onDelete={(id) => action.mutate({ id, kind: 'delete' })}
             onPublish={(id) => action.mutate({ id, kind: 'publish' })}
             onVersion={(id) => void versionFrom(id)}
+            onView={setDetailId}
           />
         ) : <p>Chưa có phiên bản nào.</p>}
       </section>
+
+      {detailId && (
+        <div className="legal-detail-backdrop" role="presentation" onMouseDown={(event) => {
+          if (event.currentTarget === event.target) setDetailId(null);
+        }}>
+          <aside aria-label="Chi tiết tài liệu pháp lý" aria-modal="true" className="legal-detail-panel" role="dialog">
+            <div className="legal-detail-header">
+              <div><span className="legal-type">Chi tiết tài liệu</span><h2>{detail.data?.title ?? 'Đang tải…'}</h2></div>
+              <button aria-label="Đóng chi tiết" className="btn ghost" onClick={() => setDetailId(null)} type="button"><X size={18} /></button>
+            </div>
+            {detail.isLoading ? <p>Đang tải chi tiết…</p> : detail.isError ? (
+              <div role="alert"><p>{getErrorMessage(detail.error)}</p><button className="btn" onClick={() => void detail.refetch()} type="button">Thử lại</button></div>
+            ) : detail.data ? (
+              <>
+                <div className="legal-detail-status">
+                  <span className={`legal-status ${detail.data.isPublished ? 'published' : 'draft'}`}>{detail.data.isPublished ? 'Đang hoạt động' : 'Bản nháp'}</span>
+                  <span>Phiên bản {detail.data.version}</span>
+                  <span>{detail.data.languageCode}</span>
+                </div>
+                <dl className="legal-detail-meta">
+                  <div><dt>Loại</dt><dd>{labels[detail.data.type] ?? 'Khác'}</dd></div>
+                  <div><dt>Ngày tạo</dt><dd>{new Date(detail.data.createdAt).toLocaleString('vi-VN')}</dd></div>
+                  <div><dt>Cập nhật</dt><dd>{new Date(detail.data.updatedAt).toLocaleString('vi-VN')}</dd></div>
+                  <div><dt>Ngày công bố</dt><dd>{detail.data.publishedAt ? new Date(detail.data.publishedAt).toLocaleString('vi-VN') : 'Chưa ghi nhận'}</dd></div>
+                </dl>
+                <section><h3>Tóm tắt</h3><p className="legal-detail-summary">{detail.data.summary || 'Không có tóm tắt.'}</p></section>
+                <section><h3>Nội dung Markdown</h3><pre className="legal-markdown-preview">{detail.data.content || 'Không có nội dung.'}</pre></section>
+                <div className="legal-actions legal-detail-actions">
+                  <button className="btn" onClick={() => { setDetailId(null); void versionFrom(detail.data!.id); }} type="button">Tạo phiên bản mới</button>
+                  {!detail.data.isPublished && (
+                    <>
+                      <button className="btn primary" disabled={action.isPending} onClick={() => action.mutate({ id: detail.data!.id, kind: 'publish' })} type="button">Công bố</button>
+                      <button className="btn danger" disabled={action.isPending} onClick={() => action.mutate({ id: detail.data!.id, kind: 'delete' })} type="button">Xóa bản nháp</button>
+                    </>
+                  )}
+                </div>
+              </>
+            ) : null}
+          </aside>
+        </div>
+      )}
     </>
   );
 }

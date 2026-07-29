@@ -143,8 +143,20 @@ tr.clickable:hover { background: #f8fafc; }
 .legal-editor-grid label { display: grid; gap: 6px; font-weight: 700; }
 .legal-editor-wide { grid-column: 1 / -1; }
 .legal-content-input { min-height: 260px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.legal-detail-backdrop { position: fixed; inset: 0; z-index: 50; display: flex; justify-content: flex-end; background: rgba(15, 23, 42, 0.42); }
+.legal-detail-panel { width: min(680px, 100%); height: 100%; overflow-y: auto; padding: 24px; background: var(--surface); box-shadow: -18px 0 45px rgba(15, 23, 42, 0.18); }
+.legal-detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.legal-detail-header h2 { margin: 0; }
+.legal-detail-status { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 18px 0; color: var(--muted); }
+.legal-detail-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 0 22px; }
+.legal-detail-meta div { padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-soft); }
+.legal-detail-meta dt { color: var(--muted); font-size: 12px; }
+.legal-detail-meta dd { margin: 5px 0 0; font-weight: 700; overflow-wrap: anywhere; }
+.legal-detail-summary { color: var(--muted); line-height: 1.65; }
+.legal-markdown-preview { max-height: 460px; overflow: auto; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-soft); color: var(--text); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.legal-detail-actions { position: sticky; bottom: -24px; margin: 24px -24px -24px; padding: 16px 24px; border-top: 1px solid var(--border); background: var(--surface); }
 @media (max-width: 768px) {
-  .legal-editor-grid, .legal-meta { grid-template-columns: 1fr; }
+  .legal-editor-grid, .legal-meta, .legal-detail-meta { grid-template-columns: 1fr; }
   .legal-editor-wide { grid-column: auto; }
 }
 
