@@ -27,6 +27,7 @@ const menu = [
   { to: '/chat-rooms', label: 'Phòng chat', icon: MessageSquare },
   { to: '/notifications', label: 'Thông báo hệ thống', icon: Bell },
   { to: '/admin-logs', label: 'Nhật ký quản trị', icon: ScrollText },
+  { to: '/legal', label: 'Tài liệu pháp lý', icon: ScrollText },
 ];
 
 export function AdminLayout({ onLogout }: { onLogout: () => void }) {

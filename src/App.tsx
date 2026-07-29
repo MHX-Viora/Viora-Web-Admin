@@ -15,6 +15,7 @@ import { ReportsPage } from './pages/ReportsPage';
 import { ReportDetailPage } from './pages/ReportDetailPage';
 import { AdminLogsPage, ChatRoomsPage, HashtagsPage, NotificationsPage } from './pages/MetaPages';
 import { LoginPage } from './pages/LoginPage';
+import { LegalDocumentsPage } from './pages/LegalDocumentsPage';
 import { isAuthenticated, setupAuthInterceptors, subscribeAuthChange } from './services/auth.service';
 
 const queryClient = new QueryClient({
@@ -84,6 +85,7 @@ export default function App() {
               <Route path="chat-rooms" element={<ChatRoomsPage />} />
               <Route path="notifications" element={<NotificationsPage />} />
               <Route path="admin-logs" element={<AdminLogsPage />} />
+              <Route path="legal" element={<LegalDocumentsPage />} />
             </Route>
             <Route path="*" element={<Navigate to={authenticated ? '/' : '/login'} replace />} />
           </Routes>
