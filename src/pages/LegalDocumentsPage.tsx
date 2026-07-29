@@ -1,45 +1,99 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { FilePlus2, RefreshCw } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
-import { createLegalDocument, createLegalVersion, deleteLegalDocument, getLegalDocument, getLegalDocuments, getPublishedLegalDocuments, publishLegalDocument, type LegalInput } from '../services/admin-legal.service';
+import {
+  createLegalDocument,
+  createLegalVersion,
+  deleteLegalDocument,
+  getLegalDocument,
+  getLegalDocuments,
+  getPublishedLegalDocuments,
+  publishLegalDocument,
+  type LegalDocument,
+  type LegalInput,
+} from '../services/admin-legal.service';
 import { getErrorMessage } from '../services/http';
 
 const labels = ['Điều khoản sử dụng', 'Chính sách bảo mật', 'Quyền truy cập ứng dụng', 'Tiêu chuẩn cộng đồng', 'Khác'];
 const empty: LegalInput = { type: 0, title: '', summary: '', content: '', languageCode: 'vi', version: '' };
 
+function DocumentCards({
+  documents,
+  management,
+  onDelete,
+  onPublish,
+  onVersion,
+}: {
+  documents: LegalDocument[];
+  management?: boolean;
+  onDelete?: (id: string) => void;
+  onPublish?: (id: string) => void;
+  onVersion?: (id: string) => void;
+}) {
+  return (
+    <div className="legal-document-grid">
+      {documents.map((document) => (
+        <article className="legal-document-card" key={document.id}>
+          <div className="legal-card-heading">
+            <div>
+              <span className="legal-type">{labels[document.type] ?? 'Khác'}</span>
+              <h3>{document.title}</h3>
+            </div>
+            <span className={`legal-status ${document.isPublished ? 'published' : 'draft'}`}>
+              {document.isPublished ? 'Đang hoạt động' : 'Bản nháp'}
+            </span>
+          </div>
+          <p>{document.summary || 'Không có tóm tắt.'}</p>
+          <dl className="legal-meta">
+            <div><dt>Phiên bản</dt><dd>{document.version}</dd></div>
+            <div><dt>Ngôn ngữ</dt><dd>{document.languageCode}</dd></div>
+            <div><dt>Cập nhật</dt><dd>{new Date(document.updatedAt).toLocaleString('vi-VN')}</dd></div>
+          </dl>
+          {management && (
+            <div className="legal-actions">
+              <button className="btn" onClick={() => onVersion?.(document.id)} type="button">Tạo phiên bản mới</button>
+              {!document.isPublished && (
+                <>
+                  <button className="btn primary" onClick={() => onPublish?.(document.id)} type="button">Công bố</button>
+                  <button className="btn danger" onClick={() => onDelete?.(document.id)} type="button">Xóa</button>
+                </>
+              )}
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+  );
+}
+
 export function LegalDocumentsPage() {
   const client = useQueryClient();
-  const query = useQuery({
-    queryKey: ['legal-documents'],
-    queryFn: getLegalDocuments,
-    refetchOnMount: 'always',
-    staleTime: 0,
-  });
-  const publishedQuery = useQuery({ queryKey: ['published-legal-documents'], queryFn: getPublishedLegalDocuments });
+  const [editorOpen, setEditorOpen] = useState(false);
   const [sourceId, setSourceId] = useState<string | null>(null);
   const [form, setForm] = useState<LegalInput>(empty);
+  const history = useQuery({ queryKey: ['legal-documents'], queryFn: getLegalDocuments, refetchOnMount: 'always', staleTime: 0 });
+  const active = useQuery({ queryKey: ['published-legal-documents'], queryFn: getPublishedLegalDocuments, refetchOnMount: 'always', staleTime: 0 });
   const refresh = async () => {
     await Promise.all([
       client.invalidateQueries({ queryKey: ['legal-documents'] }),
       client.invalidateQueries({ queryKey: ['published-legal-documents'] }),
     ]);
   };
+  const closeEditor = () => { setEditorOpen(false); setSourceId(null); setForm(empty); };
   const save = useMutation({
     mutationFn: () => sourceId ? createLegalVersion(sourceId, form) : createLegalDocument(form),
     onSuccess: (document) => {
-      client.setQueryData<Awaited<ReturnType<typeof getLegalDocuments>>>(
-        ['legal-documents'],
-        (current = []) => [document, ...current.filter((item) => item.id !== document.id)],
-      );
+      client.setQueryData<LegalDocument[]>(['legal-documents'], (current = []) => [document, ...current.filter((item) => item.id !== document.id)]);
       toast.success('Đã lưu phiên bản tài liệu.');
-      setForm(empty);
-      setSourceId(null);
+      closeEditor();
       void refresh();
     },
     onError: (error) => toast.error(getErrorMessage(error)),
   });
   const action = useMutation({
-    mutationFn: ({ id, kind }: { id: string; kind: 'publish' | 'delete' }) => kind === 'publish' ? publishLegalDocument(id) : deleteLegalDocument(id),
+    mutationFn: ({ id, kind }: { id: string; kind: 'publish' | 'delete' }) =>
+      kind === 'publish' ? publishLegalDocument(id) : deleteLegalDocument(id),
     onSuccess: () => { toast.success('Đã cập nhật tài liệu.'); void refresh(); },
     onError: (error) => toast.error(getErrorMessage(error)),
   });
@@ -48,45 +102,54 @@ export function LegalDocumentsPage() {
       const document = await getLegalDocument(id);
       setSourceId(id);
       setForm({ type: document.type, title: document.title, summary: document.summary, content: document.content ?? '', languageCode: document.languageCode, version: '' });
+      setEditorOpen(true);
     } catch (error) { toast.error(getErrorMessage(error)); }
   }
   function submit(event: FormEvent) { event.preventDefault(); save.mutate(); }
-  return <>
-    <div className="page-header"><div><h1>Tài liệu pháp lý</h1><p>Quản lý phiên bản Markdown và trạng thái công bố.</p></div></div>
-    <h2>Đang hoạt động</h2>
-    {publishedQuery.isLoading ? <p>Đang tải tài liệu đang hoạt động…</p> : publishedQuery.isError ? (
-      <div role="alert">
-        <p>{getErrorMessage(publishedQuery.error)}</p>
-        <button className="btn" onClick={() => void publishedQuery.refetch()} type="button">Thử lại</button>
+  const historyDocuments = Array.isArray(history.data) ? history.data : [];
+  const activeDocuments = Array.isArray(active.data) ? active.data : [];
+
+  return (
+    <>
+      <div className="page-header">
+        <div><h1>Tài liệu pháp lý</h1><p>Quản lý phiên bản Markdown và trạng thái công bố.</p></div>
+        <button className="btn primary" onClick={() => { closeEditor(); setEditorOpen(true); }} type="button">
+          <FilePlus2 size={17} /> Tạo tài liệu mới
+        </button>
       </div>
-    ) : !publishedQuery.data?.length ? <p>Chưa có tài liệu nào được công bố.</p> : (
-      <div className="table-wrap">
-        <table>
-          <thead><tr><th>Loại</th><th>Tiêu đề</th><th>Phiên bản</th><th>Ngôn ngữ</th><th>Ngày công bố</th></tr></thead>
-          <tbody>{publishedQuery.data.map((item) => (
-            <tr key={item.id}>
-              <td>{labels[item.type] ?? 'Khác'}</td>
-              <td>{item.title}</td>
-              <td>{item.version}</td>
-              <td>{item.languageCode}</td>
-              <td>{item.publishedAt ? new Date(item.publishedAt).toLocaleString('vi-VN') : 'Chưa ghi nhận'}</td>
-            </tr>
-          ))}</tbody>
-        </table>
-      </div>
-    )}
-    <h2 style={{ marginTop: 32 }}>Lịch sử phiên bản</h2>
-    {query.isLoading ? <p>Đang tải lịch sử…</p> : query.isError ? <div role="alert"><p>Không tải được lịch sử quản trị: {getErrorMessage(query.error)}</p><button className="btn" onClick={() => void query.refetch()} type="button">Thử lại</button></div> : !query.data?.length ? <p>Chưa có phiên bản nào.</p> :
-      <div className="table-wrap"><table><thead><tr><th>Loại</th><th>Tiêu đề</th><th>Phiên bản</th><th>Ngôn ngữ</th><th>Trạng thái</th><th>Cập nhật</th><th>Thao tác</th></tr></thead><tbody>{query.data.map((item) => <tr key={item.id}><td>{labels[item.type] ?? 'Khác'}</td><td>{item.title}</td><td>{item.version}</td><td>{item.languageCode}</td><td>{item.isPublished ? 'Đã công bố' : 'Bản nháp'}</td><td>{new Date(item.updatedAt).toLocaleString('vi-VN')}</td><td><button className="btn" onClick={() => void versionFrom(item.id)} type="button">Phiên bản mới</button>{!item.isPublished && <><button className="btn primary" onClick={() => action.mutate({ id: item.id, kind: 'publish' })} type="button">Công bố</button><button className="btn danger" onClick={() => action.mutate({ id: item.id, kind: 'delete' })} type="button">Xóa</button></>}</td></tr>)}</tbody></table></div>}
-    <h2 style={{ marginTop: 32 }}>Tạo phiên bản</h2>
-    <form className="form-grid" onSubmit={submit}>
-      <label>Loại<select disabled={Boolean(sourceId)} value={form.type} onChange={(e) => setForm({ ...form, type: Number(e.target.value) })}>{labels.map((label, index) => <option key={label} value={index}>{label}</option>)}</select></label>
-      <label>Tiêu đề<input required maxLength={255} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></label>
-      <label>Phiên bản<input required maxLength={20} placeholder="1.0" value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })} /></label>
-      <label>Ngôn ngữ<input required maxLength={10} disabled={Boolean(sourceId)} value={form.languageCode} onChange={(e) => setForm({ ...form, languageCode: e.target.value })} /></label>
-      <label>Tóm tắt<textarea value={form.summary ?? ''} onChange={(e) => setForm({ ...form, summary: e.target.value })} /></label>
-      <label>Nội dung Markdown<textarea required style={{ minHeight: 300 }} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} /></label>
-      <div><button className="btn primary" disabled={save.isPending} type="submit">{sourceId ? 'Tạo phiên bản mới' : 'Tạo tài liệu'}</button>{sourceId && <button className="btn ghost" onClick={() => { setSourceId(null); setForm(empty); }} type="button">Hủy</button>}</div>
-    </form>
-  </>;
+
+      {editorOpen && (
+        <section className="legal-editor-card">
+          <div className="legal-section-heading"><div><h2>{sourceId ? 'Tạo phiên bản mới' : 'Tạo tài liệu mới'}</h2><p>Nội dung được lưu dưới dạng Markdown.</p></div><button className="btn ghost" onClick={closeEditor} type="button">Đóng</button></div>
+          <form className="legal-editor-grid" onSubmit={submit}>
+            <label>Loại<select disabled={Boolean(sourceId)} value={form.type} onChange={(event) => setForm({ ...form, type: Number(event.target.value) })}>{labels.map((label, index) => <option key={label} value={index}>{label}</option>)}</select></label>
+            <label>Phiên bản<input required maxLength={20} placeholder="1.0.0" value={form.version} onChange={(event) => setForm({ ...form, version: event.target.value })} /></label>
+            <label className="legal-editor-wide">Tiêu đề<input required maxLength={255} value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
+            <label>Ngôn ngữ<input required maxLength={10} disabled={Boolean(sourceId)} value={form.languageCode} onChange={(event) => setForm({ ...form, languageCode: event.target.value })} /></label>
+            <label className="legal-editor-wide">Tóm tắt<textarea value={form.summary ?? ''} onChange={(event) => setForm({ ...form, summary: event.target.value })} /></label>
+            <label className="legal-editor-wide">Nội dung Markdown<textarea required className="legal-content-input" value={form.content} onChange={(event) => setForm({ ...form, content: event.target.value })} /></label>
+            <div className="legal-editor-wide legal-actions"><button className="btn primary" disabled={save.isPending} type="submit">{save.isPending ? 'Đang lưu…' : sourceId ? 'Tạo phiên bản' : 'Tạo tài liệu'}</button><button className="btn ghost" onClick={closeEditor} type="button">Hủy</button></div>
+          </form>
+        </section>
+      )}
+
+      <section className="legal-section">
+        <div className="legal-section-heading"><div><h2>Đang hoạt động</h2><p>{activeDocuments.length} tài liệu đã công bố</p></div><button aria-label="Tải lại tài liệu đang hoạt động" className="btn ghost" onClick={() => void active.refetch()} type="button"><RefreshCw size={16} /></button></div>
+        {active.isLoading ? <p>Đang tải…</p> : active.isError ? <p role="alert">{getErrorMessage(active.error)}</p> : activeDocuments.length ? <DocumentCards documents={activeDocuments} /> : <p>Chưa có tài liệu nào được công bố.</p>}
+      </section>
+
+      <section className="legal-section">
+        <div className="legal-section-heading"><div><h2>Lịch sử phiên bản</h2><p>{historyDocuments.length} phiên bản</p></div><button aria-label="Tải lại lịch sử" className="btn ghost" onClick={() => void history.refetch()} type="button"><RefreshCw size={16} /></button></div>
+        {history.isLoading ? <p>Đang tải…</p> : history.isError ? <p role="alert">{getErrorMessage(history.error)}</p> : historyDocuments.length ? (
+          <DocumentCards
+            documents={historyDocuments}
+            management
+            onDelete={(id) => action.mutate({ id, kind: 'delete' })}
+            onPublish={(id) => action.mutate({ id, kind: 'publish' })}
+            onVersion={(id) => void versionFrom(id)}
+          />
+        ) : <p>Chưa có phiên bản nào.</p>}
+      </section>
+    </>
+  );
 }
