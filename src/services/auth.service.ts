@@ -64,7 +64,13 @@ export function getCurrentUser() {
 }
 
 export function isAuthenticated() {
-  return Boolean(getAccessToken());
+  const token = getAccessToken();
+  const user = getCurrentUser();
+  if (!token || user?.role !== 2 || isJwtExpired(token)) {
+    clearStoredSession();
+    return false;
+  }
+  return true;
 }
 
 export function subscribeAuthChange(callback: () => void) {
@@ -173,10 +179,14 @@ function setAccessToken(accessToken: string) {
 }
 
 function clearSession() {
+  clearStoredSession();
+  emitAuthChange();
+}
+
+function clearStoredSession() {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
   delete apiClient.defaults.headers.common.Authorization;
-  emitAuthChange();
 }
 
 function expireSession() {
@@ -197,6 +207,18 @@ function isAuthEndpoint(url?: string) {
 
 function isTokenEndpoint(url?: string) {
   return Boolean(url?.includes('/api/accounts/login') || url?.includes('/api/accounts/refresh-token'));
+}
+
+function isJwtExpired(token: string) {
+  try {
+    const payloadSegment = token.split('.')[1];
+    if (!payloadSegment) return true;
+    const base64 = payloadSegment.replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64)) as { exp?: unknown };
+    return typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now();
+  } catch {
+    return true;
+  }
 }
 
 function parseApiData<T>(data: unknown) {
