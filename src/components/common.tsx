@@ -2,10 +2,11 @@ import type { ReactNode } from 'react';
 import { AlertTriangle, Inbox, Loader2, Search } from 'lucide-react';
 import type { Status } from '../types/admin';
 
-export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
+export function PageHeader({ title, description, actions, eyebrow }: { title: string; description?: string; actions?: ReactNode; eyebrow?: string }) {
   return (
     <div className="page-header">
       <div>
+        {eyebrow ? <span className="page-eyebrow">{eyebrow}</span> : null}
         <h1>{title}</h1>
         {description ? <p>{description}</p> : null}
       </div>
@@ -105,13 +106,18 @@ export function DataTable<T extends { id: string }>({ columns, items = [], onRow
 
   return (
     <div className="table-wrap">
-      <table>
+      <table aria-label="Danh sách dữ liệu quản trị">
         <thead>
           <tr>{columns.map((column) => <th key={column.key}>{column.title}</th>)}</tr>
         </thead>
         <tbody>
           {items.map((item) => (
-            <tr key={item.id} onClick={() => onRowClick?.(item)} className={onRowClick ? 'clickable' : undefined}>
+            <tr key={item.id} onClick={() => onRowClick?.(item)} onKeyDown={(event) => {
+              if (onRowClick && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault();
+                onRowClick(item);
+              }
+            }} className={onRowClick ? 'clickable' : undefined} tabIndex={onRowClick ? 0 : undefined}>
               {columns.map((column) => <td key={column.key}>{column.render(item)}</td>)}
             </tr>
           ))}

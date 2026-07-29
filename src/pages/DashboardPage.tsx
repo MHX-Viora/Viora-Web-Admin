@@ -24,15 +24,23 @@ export function DashboardPage() {
 
   return (
     <section className="dashboard-page">
-      <PageHeader title="Bảng điều khiển" description="Tổng quan vận hành, kiểm duyệt và hoạt động người dùng của Viora." />
+      <PageHeader eyebrow="Tổng quan hệ thống" title="Bảng điều khiển" description="Theo dõi tăng trưởng, nội dung và hàng đợi kiểm duyệt trong một không gian thống nhất." />
       {query.isLoading ? <Loading rows={9} /> : null}
       {query.isError ? <ErrorView message={getErrorMessage(query.error)} onRetry={() => void query.refetch()} /> : null}
       {query.data ? (
-        <div className="stats-grid">
-          {stats.map(([key, label, Icon, tone]) => (
-            <StatCard key={key} icon={<Icon size={20} />} label={label} value={formatNumber(query.data[key])} tone={tone} />
-          ))}
-        </div>
+        <>
+          <div className="dashboard-summary">
+            <div><span>Người dùng hôm nay</span><strong>{formatNumber(query.data.activeUsersToday)}</strong><small>trên {formatNumber(query.data.totalUsers)} tài khoản</small></div>
+            <div><span>Nội dung mới</span><strong>{formatNumber(query.data.todayPosts + query.data.todayVideos)}</strong><small>bài viết và video hôm nay</small></div>
+            <div><span>Cần xử lý</span><strong>{formatNumber(query.data.pendingReports + query.data.pendingIdentities)}</strong><small>báo cáo và xác minh đang chờ</small></div>
+          </div>
+          <div className="section-heading"><div><span>Chỉ số nhanh</span><h2>Hoạt động nền tảng</h2></div><p>Dữ liệu cập nhật từ hệ thống quản trị hiện tại.</p></div>
+          <div className="stats-grid">
+            {stats.map(([key, label, Icon, tone]) => (
+              <StatCard key={key} icon={<Icon size={20} />} label={label} value={formatNumber(query.data[key])} tone={tone} />
+            ))}
+          </div>
+        </>
       ) : null}
     </section>
   );
