@@ -98,6 +98,15 @@ export async function login(payload: LoginPayload) {
     throw new Error('Tài khoản không có quyền quản trị');
   }
 
+  try {
+    await authClient.get('/api/admin/dashboard', {
+      headers: { Authorization: `Bearer ${result.accessToken}` },
+    });
+  } catch {
+    clearSession();
+    throw new Error('Token quản trị không được máy chủ chấp nhận. Vui lòng đăng nhập lại.');
+  }
+
   setSession(result.accessToken, result.user);
   return result;
 }
@@ -139,7 +148,7 @@ export function setupAuthInterceptors(client: AxiosInstance = apiClient) {
   client.interceptors.request.use((config) => {
     const token = getAccessToken();
     if (token && !isTokenEndpoint(config.url)) {
-      config.headers.Authorization = `Bearer ${token}`;
+      setAuthorizationHeader(config, token);
     }
     return config;
   });
@@ -157,7 +166,7 @@ export function setupAuthInterceptors(client: AxiosInstance = apiClient) {
 
       try {
         const token = await refreshAccessToken();
-        config.headers.Authorization = `Bearer ${token}`;
+        setAuthorizationHeader(config, token);
         return client.request(config);
       } catch (refreshError) {
         expireSession();
@@ -165,6 +174,14 @@ export function setupAuthInterceptors(client: AxiosInstance = apiClient) {
       }
     },
   );
+}
+
+function setAuthorizationHeader(config: InternalAxiosRequestConfig, token: string) {
+  if (typeof config.headers.set === 'function') {
+    config.headers.set('Authorization', `Bearer ${token}`);
+    return;
+  }
+  config.headers.Authorization = `Bearer ${token}`;
 }
 
 function setSession(accessToken: string, user?: AdminUser) {

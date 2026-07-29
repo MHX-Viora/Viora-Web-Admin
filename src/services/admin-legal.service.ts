@@ -8,7 +8,11 @@ export type LegalDocument = {
 export type LegalInput = Pick<LegalDocument, 'type' | 'title' | 'summary' | 'languageCode' | 'version'> & { content: string };
 
 export async function getLegalDocuments() {
-  return unwrapApiData<LegalDocument[]>((await apiClient.get('/api/admin/legal')).data);
+  const response = await apiClient.get('/api/admin/legal', {
+    headers: { 'Cache-Control': 'no-cache' },
+    params: { _: Date.now() },
+  });
+  return unwrapApiData<LegalDocument[]>(response.data);
 }
 export async function getPublishedLegalDocuments() {
   return unwrapApiData<LegalDocument[]>((await apiClient.get('/api/legal')).data);

@@ -9,7 +9,12 @@ const empty: LegalInput = { type: 0, title: '', summary: '', content: '', langua
 
 export function LegalDocumentsPage() {
   const client = useQueryClient();
-  const query = useQuery({ queryKey: ['legal-documents'], queryFn: getLegalDocuments });
+  const query = useQuery({
+    queryKey: ['legal-documents'],
+    queryFn: getLegalDocuments,
+    refetchOnMount: 'always',
+    staleTime: 0,
+  });
   const publishedQuery = useQuery({ queryKey: ['published-legal-documents'], queryFn: getPublishedLegalDocuments });
   const [sourceId, setSourceId] = useState<string | null>(null);
   const [form, setForm] = useState<LegalInput>(empty);
@@ -21,7 +26,16 @@ export function LegalDocumentsPage() {
   };
   const save = useMutation({
     mutationFn: () => sourceId ? createLegalVersion(sourceId, form) : createLegalDocument(form),
-    onSuccess: () => { toast.success('Đã lưu phiên bản tài liệu.'); setForm(empty); setSourceId(null); void refresh(); },
+    onSuccess: (document) => {
+      client.setQueryData<Awaited<ReturnType<typeof getLegalDocuments>>>(
+        ['legal-documents'],
+        (current = []) => [document, ...current.filter((item) => item.id !== document.id)],
+      );
+      toast.success('Đã lưu phiên bản tài liệu.');
+      setForm(empty);
+      setSourceId(null);
+      void refresh();
+    },
     onError: (error) => toast.error(getErrorMessage(error)),
   });
   const action = useMutation({
