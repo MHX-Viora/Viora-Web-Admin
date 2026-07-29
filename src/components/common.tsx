@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { AlertTriangle, Inbox, Loader2, Search } from 'lucide-react';
+import { AlertTriangle, Inbox, Loader2, Search, X } from 'lucide-react';
 import type { Status } from '../types/admin';
 
 export function PageHeader({ title, description, actions, eyebrow }: { title: string; description?: string; actions?: ReactNode; eyebrow?: string }) {
@@ -39,6 +39,11 @@ export function SearchBox({ value, onChange, placeholder = 'Tìm kiếm' }: { va
     <label className="search-box">
       <Search size={16} />
       <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} />
+      {value ? (
+        <button aria-label="Xóa nội dung tìm kiếm" className="search-clear" onClick={() => onChange('')} type="button">
+          <X size={15} />
+        </button>
+      ) : null}
     </label>
   );
 }

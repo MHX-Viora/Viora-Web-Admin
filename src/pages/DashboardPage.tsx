@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Activity, FileText, Flag, MessageCircle, MessageSquare, ShieldCheck, UserPlus, Users, Video } from 'lucide-react';
+import { Activity, FileText, Flag, MessageCircle, MessageSquare, RefreshCw, ShieldCheck, UserPlus, Users, Video } from 'lucide-react';
 import { ErrorView, Loading, PageHeader, StatCard } from '../components/common';
 import { getDashboardStats } from '../services/admin-dashboard.service';
 import { getErrorMessage } from '../services/http';
@@ -21,10 +21,23 @@ const stats = [
 
 export function DashboardPage() {
   const query = useQuery({ queryKey: ['dashboard'], queryFn: getDashboardStats });
+  const today = new Intl.DateTimeFormat('vi-VN', {
+    dateStyle: 'full',
+  }).format(new Date());
 
   return (
     <section className="dashboard-page">
-      <PageHeader eyebrow="Tổng quan hệ thống" title="Bảng điều khiển" description="Theo dõi tăng trưởng, nội dung và hàng đợi kiểm duyệt trong một không gian thống nhất." />
+      <PageHeader
+        eyebrow="Tổng quan hệ thống"
+        title="Bảng điều khiển"
+        description={`Theo dõi tăng trưởng, nội dung và hàng đợi kiểm duyệt · ${today}`}
+        actions={(
+          <button className="btn primary" disabled={query.isFetching} onClick={() => void query.refetch()} type="button">
+            <RefreshCw className={query.isFetching ? 'spin' : undefined} size={17} />
+            Làm mới dữ liệu
+          </button>
+        )}
+      />
       {query.isLoading ? <Loading rows={9} /> : null}
       {query.isError ? <ErrorView message={getErrorMessage(query.error)} onRetry={() => void query.refetch()} /> : null}
       {query.data ? (

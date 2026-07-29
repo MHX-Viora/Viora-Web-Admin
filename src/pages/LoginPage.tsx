@@ -32,7 +32,7 @@ export function LoginPage({ onLogin }: { onLogin: () => void }) {
         <div className="login-brand">
           <ShieldCheck size={30} />
           <div>
-            <strong>Viora Admin</strong>
+            <strong>ANKT Admin</strong>
             <span>Trang quản trị hệ thống</span>
           </div>
         </div>
