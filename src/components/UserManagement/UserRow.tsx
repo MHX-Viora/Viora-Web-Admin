@@ -4,6 +4,7 @@ import { UserAvatar } from '../common';
 import type { User } from '../../types/admin';
 import { formatNumber } from '../../utils/format';
 import { UserIdentityBadge, UserStatusBadge } from './StatusBadge';
+import { AccountStyleBadge } from './AccountStyleBadge';
 
 export function UserRow({ user }: { user: User }) {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export function UserRow({ user }: { user: User }) {
       <td>{user.phone ?? '-'}</td>
       <td><UserStatusBadge status={user.status} /></td>
       <td><UserIdentityBadge status={user.identityStatus} /></td>
+      <td><AccountStyleBadge value={user.accountStyle} /></td>
       <td>{user.verified ? <CheckCircle className="verified-icon" size={18} /> : <XCircle className="unverified-icon" size={18} />}</td>
       <td>{formatNumber(user.postCount)}</td>
       <td>{formatNumber(user.friendCount)}</td>
@@ -34,7 +36,7 @@ export function UserCardRow({ user }: { user: User }) {
       <div>
         <strong>{user.name}</strong>
         <span>{user.email}</span>
-        <div className="badge-row"><UserStatusBadge status={user.status} /><UserIdentityBadge status={user.identityStatus} /></div>
+        <div className="badge-row"><UserStatusBadge status={user.status} /><AccountStyleBadge value={user.accountStyle} /><UserIdentityBadge status={user.identityStatus} /></div>
       </div>
       <button className="btn" type="button"><Eye size={16} /></button>
     </article>

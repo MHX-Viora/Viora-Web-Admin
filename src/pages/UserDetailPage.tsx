@@ -5,13 +5,14 @@ import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { ErrorView, PageHeader } from '../components/common';
 import { AccountInfoCard } from '../components/UserDetail/AccountInfoCard';
+import { AccountStyleCard } from '../components/UserDetail/AccountStyleCard';
 import { IdentityCard } from '../components/UserDetail/IdentityCard';
 import { ImagePreviewModal } from '../components/UserDetail/ImagePreviewModal';
 import { LoadingSkeleton } from '../components/UserDetail/LoadingSkeleton';
 import { UserProfileCard } from '../components/UserDetail/UserProfileCard';
 import { UserStatisticsCard } from '../components/UserDetail/UserStatisticsCard';
 import { useUserDetail } from '../hooks/useUserDetail';
-import { updateUserStatus, updateUserVerification } from '../services/admin-user.service';
+import { updateUserAccountStyle, updateUserStatus, updateUserVerification } from '../services/admin-user.service';
 import { getErrorMessage } from '../services/http';
 
 type ConfirmAction =
@@ -24,6 +25,7 @@ export function UserDetailPage() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const [reason, setReason] = useState('');
+  const [accountStyleDraft, setAccountStyleDraft] = useState<number | null>(null);
   const query = useUserDetail(id);
   const statusMutation = useMutation({
     mutationFn: ({ status, reason }: { status: number; reason?: string }) => updateUserStatus(id ?? '', { status, reason }),
@@ -40,6 +42,16 @@ export function UserDetailPage() {
     onSuccess: () => {
       toast.success('Cập nhật xác thực thành công.');
       closeConfirm();
+      void queryClient.invalidateQueries({ queryKey: ['users', id] });
+      void queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (error) => toast.error(getErrorMessage(error)),
+  });
+  const accountStyleMutation = useMutation({
+    mutationFn: (accountStyle: number) => updateUserAccountStyle(id ?? '', accountStyle),
+    onSuccess: () => {
+      toast.success('Đã cập nhật loại tài khoản.');
+      setAccountStyleDraft(null);
       void queryClient.invalidateQueries({ queryKey: ['users', id] });
       void queryClient.invalidateQueries({ queryKey: ['users'] });
     },
@@ -98,7 +110,7 @@ export function UserDetailPage() {
     verifyMutation.mutate(confirmAction.type === 'verify');
   }
 
-  const loading = statusMutation.isPending || verifyMutation.isPending;
+  const loading = statusMutation.isPending || verifyMutation.isPending || accountStyleMutation.isPending;
 
   return (
     <section className="user-detail-page">
@@ -123,6 +135,12 @@ export function UserDetailPage() {
         <UserStatisticsCard user={user} />
         <IdentityCard user={user} onPreview={setPreviewImage} />
         <AccountInfoCard user={user} />
+        <AccountStyleCard
+          disabled={accountStyleMutation.isPending}
+          onChange={setAccountStyleDraft}
+          onSave={() => accountStyleMutation.mutate(accountStyleDraft ?? user.accountStyle)}
+          value={accountStyleDraft ?? user.accountStyle}
+        />
       </div>
       {confirmAction ? (
         <div className="modal-backdrop" role="presentation">

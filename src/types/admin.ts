@@ -40,6 +40,7 @@ export type User = {
   email: string;
   phone?: string;
   role?: number;
+  accountStyle: number;
   status: Status | string | number;
   identityStatus?: number;
   identity?: Identity | null;

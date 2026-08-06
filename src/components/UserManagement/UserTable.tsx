@@ -14,6 +14,7 @@ export function UserTable({ users }: { users: User[] }) {
               <th>Số điện thoại</th>
               <th>Trạng thái</th>
               <th>Xác thực</th>
+              <th>Loại tài khoản</th>
               <th>Tick xanh</th>
               <th>Bài viết</th>
               <th>Bạn bè</th>

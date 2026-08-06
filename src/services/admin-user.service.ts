@@ -22,6 +22,11 @@ export async function updateUserVerification(userId: string, payload: { isVerifi
   return unwrapApiData(data);
 }
 
+export async function updateUserAccountStyle(userId: string, accountStyle: number) {
+  const { data } = await apiClient.put<unknown>(`/api/admin/users/${userId}/account-style`, { accountStyle });
+  return unwrapApiData(data);
+}
+
 type ApiUser = {
   id: string;
   accountId?: string;
@@ -32,6 +37,7 @@ type ApiUser = {
   email?: string;
   phone?: string | null;
   role?: number;
+  accountStyle?: number;
   status?: User['status'];
   identityStatus?: number;
   identity?: User['identity'];
@@ -73,6 +79,7 @@ function mapUser(user: ApiUser): User {
     email: user.email ?? '-',
     phone: user.phone ?? undefined,
     role: user.role,
+    accountStyle: user.accountStyle ?? 0,
     status: user.status ?? 'inactive',
     identityStatus: user.identityStatus,
     identity: user.identity,

@@ -197,6 +197,31 @@ tbody tr:hover, .user-table tbody tr:hover { background: color-mix(in srgb,var(-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+.account-style-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  width: fit-content;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.account-style-1 { background: var(--primary-soft); color: var(--primary); }
+.account-style-2 { background: var(--info-soft); color: var(--info); }
+.account-style-3 { background: var(--success-soft); color: var(--success); }
+.account-style-4 { background: var(--warning-soft); color: var(--warning); }
+.account-style-5 { background: var(--danger-soft); color: var(--danger); }
+
+.account-style-card p { color: var(--muted); margin: 0 0 14px; }
+.account-style-card select { width: 100%; }
+.account-style-card .btn { margin-top: 16px; }
 .page-eyebrow { display: block; margin-bottom: 6px; color: var(--primary); font-size: 11px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
 .dashboard-summary { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1px; margin-bottom: 30px; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--border); box-shadow: var(--shadow-sm); }
 .dashboard-summary > div { display: grid; gap: 3px; padding: 22px; background: var(--surface); }

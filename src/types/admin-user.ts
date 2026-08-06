@@ -10,6 +10,15 @@ export const roleLabels: Record<number, string> = {
   2: 'Quản trị viên',
 };
 
+export const accountStyleLabels: Record<number, string> = {
+  0: 'Cá nhân',
+  1: 'Nhà sáng tạo',
+  2: 'Nhà báo',
+  3: 'Doanh nghiệp',
+  4: 'Tổ chức',
+  5: 'Cơ quan',
+};
+
 export const accountStatusLabels: Record<number, string> = {
   0: 'Đã khóa',
   1: 'Đang hoạt động',

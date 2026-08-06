@@ -83,6 +83,7 @@ function mapConversation(room: ApiConversation): ChatRoom {
       name: member.displayName,
       email: '',
       status: 'active',
+      accountStyle: 0,
       verified: false,
       postCount: 0,
       videoCount: 0,
