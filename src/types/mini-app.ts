@@ -1,0 +1,10 @@
+export type MiniAppStatus = 'Draft' | 'PendingReview' | 'Active' | 'Suspended' | 'Rejected' | 'Deleted';
+export type DeveloperStatus = 'Pending' | 'Active' | 'Suspended' | 'Rejected';
+export type MiniAppPermission = { code: string; name: string; description?: string | null; isSensitive: boolean };
+export type MiniAppDashboard = { totalMiniApps: number; active: number; pendingReview: number; suspended: number; developers: number; successfulLaunches: number; failedLaunches: number };
+export type MiniAppListItem = { id: string; name: string; slug: string; developer: string; webUrl: string; status: MiniAppStatus; isFeatured: boolean; createdAt: string };
+export type AdminPage<T> = { items: T[]; total: number; page: number; pageSize: number };
+export type MiniAppDetail = { id: string; name: string; slug: string; developer: string; description?: string | null; iconUrl?: string | null; coverUrl?: string | null; webUrl: string; callbackUrl: string; allowedDomains: string[]; permissions: MiniAppPermission[]; clientId: string; status: MiniAppStatus; isFeatured: boolean; createdAt: string; updatedAt: string };
+export type Developer = { id: string; accountId?: string | null; name: string; companyName?: string | null; email: string; phone?: string | null; website?: string | null; status: DeveloperStatus; miniAppCount: number; createdAt: string; updatedAt: string };
+export type MiniAppAudit = { id: string; miniAppId?: string | null; developerId?: string | null; actorAccountId?: string | null; action: string; detail?: string | null; createdAt: string };
+export type MiniAppUpdate = Omit<MiniAppDetail, 'id' | 'developer' | 'clientId' | 'status' | 'createdAt' | 'updatedAt' | 'permissions'> & { permissions: string[] };

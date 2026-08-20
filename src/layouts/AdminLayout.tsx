@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell, ChevronLeft, ChevronRight, ClipboardCheck, Command, FileText, Flag,
   Hash, Home, LogOut, Menu, MessageSquare, Moon, Search, ScrollText,
-  ShieldCheck, Sparkles, Sun, Users, Video,
+  ShieldCheck, Sparkles, Sun, Users, Video, AppWindow, Code2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { UserAvatar } from '../components/common';
@@ -25,6 +25,8 @@ const menuGroups: MenuGroup[] = [
       { to: '/posts', label: 'Bài viết', icon: FileText },
       { to: '/videos', label: 'Video ngắn', icon: Video },
       { to: '/reports', label: 'Báo cáo', icon: Flag },
+      { to: '/mini-apps', label: 'Mini Apps', icon: AppWindow },
+      { to: '/developers', label: 'Developers', icon: Code2 },
     ],
   },
   {
