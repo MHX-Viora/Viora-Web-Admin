@@ -8,13 +8,13 @@ export function ReportTable({ reports }: { reports: AdminReport[] }) {
         <table className="user-table report-table">
           <thead>
             <tr>
-              <th>Người báo cáo</th>
-              <th>Đối tượng bị báo cáo</th>
-              <th>Lý do</th>
-              <th className="optional-tablet">Mô tả</th>
-              <th>Trạng thái</th>
-              <th>Ngày tạo</th>
-              <th>Thao tác</th>
+              <th className="column-author">Người báo cáo</th>
+              <th className="column-target">Đối tượng bị báo cáo</th>
+              <th className="column-reason">Lý do</th>
+              <th className="column-content table-column-secondary">Mô tả</th>
+              <th className="column-status">Trạng thái</th>
+              <th className="column-date">Ngày tạo</th>
+              <th className="column-action"><span className="sr-only">Thao tác</span></th>
             </tr>
           </thead>
           <tbody>{reports.map((report) => <ReportRow key={report.id} report={report} />)}</tbody>

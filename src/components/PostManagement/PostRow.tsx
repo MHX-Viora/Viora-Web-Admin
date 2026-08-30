@@ -11,21 +11,21 @@ export function PostRow({ post }: { post: AdminPost }) {
 
   return (
     <tr onClick={openDetail}>
-      <td>
+      <td className="column-author">
         <div className="post-author-cell">
           <UserAvatar src={post.avatarUrl} name={post.displayName || 'User'} />
           <div><strong>{post.displayName || '-'}</strong><span>{post.userId}</span></div>
         </div>
       </td>
-      <td><PostTypeBadge type={post.postType} /></td>
-      <td><span className="post-content-clamp" title={post.content}>{post.content || '-'}</span></td>
-      <td><PostStatusBadge status={post.status} /></td>
-      <td>{formatNumber(post.reactionCount)}</td>
-      <td>{formatNumber(post.commentCount)}</td>
-      <td>{formatNumber(post.shareCount)}</td>
-      <td><ReportBadge count={post.reportCount} /></td>
-      <td><DateCell value={post.createdAt} /></td>
-      <td><button className="btn" onClick={(event) => { event.stopPropagation(); openDetail(); }} type="button"><Eye size={16} />Xem</button></td>
+      <td className="column-type table-column-secondary"><PostTypeBadge type={post.postType} /></td>
+      <td className="column-content"><span className="post-content-clamp" title={post.content}>{post.content || '-'}</span></td>
+      <td className="column-status"><PostStatusBadge status={post.status} /></td>
+      <td className="column-engagement table-column-secondary">{formatNumber(post.reactionCount)}</td>
+      <td className="column-engagement table-column-secondary">{formatNumber(post.commentCount)}</td>
+      <td className="column-engagement table-column-secondary">{formatNumber(post.shareCount)}</td>
+      <td className="column-report"><ReportBadge count={post.reportCount} /></td>
+      <td className="column-date"><DateCell value={post.createdAt} /></td>
+      <td className="column-action"><button aria-label="Xem chi tiết bài viết" className="table-action-button" onClick={(event) => { event.stopPropagation(); openDetail(); }} title="Xem chi tiết" type="button"><Eye size={15} /></button></td>
     </tr>
   );
 }
@@ -40,7 +40,7 @@ export function PostCardRow({ post }: { post: AdminPost }) {
         <span className="post-content-clamp">{post.content || '-'}</span>
         <div className="badge-row"><PostTypeBadge type={post.postType} /><PostStatusBadge status={post.status} /><ReportBadge count={post.reportCount} /></div>
       </div>
-      <button className="btn" type="button"><Eye size={16} /></button>
+      <button aria-label="Xem chi tiết bài viết" className="btn" type="button"><Eye size={16} /></button>
     </article>
   );
 }

@@ -11,13 +11,13 @@ export function ReportRow({ report }: { report: AdminReport }) {
 
   return (
     <tr onClick={openDetail}>
-      <td><Reporter report={report} /></td>
-      <td><Target report={report} /></td>
-      <td><ReasonBadge value={report.reason} /></td>
-      <td className="optional-tablet"><span className="post-content-clamp" title={report.description}>{report.description || '-'}</span></td>
-      <td><ReportStatusBadge value={report.status} /></td>
-      <td><DateCell value={report.createdAt} /></td>
-      <td><button className="btn" onClick={(event) => { event.stopPropagation(); openDetail(); }} type="button"><Eye size={16} />Xem chi tiết</button></td>
+      <td className="column-author"><Reporter report={report} /></td>
+      <td className="column-target"><Target report={report} /></td>
+      <td className="column-reason"><ReasonBadge value={report.reason} /></td>
+      <td className="column-content table-column-secondary"><span className="post-content-clamp" title={report.description}>{report.description || '-'}</span></td>
+      <td className="column-status"><ReportStatusBadge value={report.status} /></td>
+      <td className="column-date"><DateCell value={report.createdAt} /></td>
+      <td className="column-action"><button aria-label="Xem chi tiết báo cáo" className="table-action-button" onClick={(event) => { event.stopPropagation(); openDetail(); }} title="Xem chi tiết" type="button"><Eye size={16} /></button></td>
     </tr>
   );
 }
@@ -32,7 +32,7 @@ export function ReportCardRow({ report }: { report: AdminReport }) {
         <span>{report.reporterUserId}</span>
         <div className="badge-row"><TargetTypeBadge value={report.targetType} /><ReasonBadge value={report.reason} /><ReportStatusBadge value={report.status} /></div>
       </div>
-      <button className="btn" type="button"><Eye size={16} /></button>
+      <button aria-label="Xem chi tiết báo cáo" className="btn" type="button"><Eye size={16} /></button>
     </article>
   );
 }

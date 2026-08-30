@@ -11,16 +11,16 @@ export function VideoRow({ video }: { video: AdminVideo }) {
 
   return (
     <tr onClick={openDetail}>
-      <td><div className="post-author-cell"><UserAvatar src={video.avatarUrl} name={video.displayName || 'User'} /><div><strong>{video.displayName || '-'}</strong><span>{video.userId}</span></div></div></td>
-      <td><PostTypeBadge type={1} /></td>
-      <td><span className="post-content-clamp" title={video.content}>{video.content || '-'}</span></td>
-      <td><PostStatusBadge status={video.status} /></td>
-      <td>{formatNumber(video.reactionCount)}</td>
-      <td>{formatNumber(video.commentCount)}</td>
-      <td>{formatNumber(video.shareCount)}</td>
-      <td><ReportBadge count={video.reportCount} /></td>
-      <td><DateCell value={video.createdAt} /></td>
-      <td><button className="btn" onClick={(event) => { event.stopPropagation(); openDetail(); }} type="button"><Eye size={16} />Xem</button></td>
+      <td className="column-author"><div className="post-author-cell"><UserAvatar src={video.avatarUrl} name={video.displayName || 'User'} /><div><strong>{video.displayName || '-'}</strong><span>{video.userId}</span></div></div></td>
+      <td className="column-type table-column-secondary"><PostTypeBadge type={1} /></td>
+      <td className="column-content"><span className="post-content-clamp" title={video.content}>{video.content || '-'}</span></td>
+      <td className="column-status"><PostStatusBadge status={video.status} /></td>
+      <td className="column-engagement table-column-secondary">{formatNumber(video.reactionCount)}</td>
+      <td className="column-engagement table-column-secondary">{formatNumber(video.commentCount)}</td>
+      <td className="column-engagement table-column-secondary">{formatNumber(video.shareCount)}</td>
+      <td className="column-report"><ReportBadge count={video.reportCount} /></td>
+      <td className="column-date"><DateCell value={video.createdAt} /></td>
+      <td className="column-action"><button aria-label="Xem chi tiết video" className="table-action-button" onClick={(event) => { event.stopPropagation(); openDetail(); }} title="Xem chi tiết" type="button"><Eye size={16} /></button></td>
     </tr>
   );
 }
@@ -35,7 +35,7 @@ export function VideoCardRow({ video }: { video: AdminVideo }) {
         <span className="post-content-clamp">{video.content || '-'}</span>
         <div className="badge-row"><PostTypeBadge type={1} /><PostStatusBadge status={video.status} /><ReportBadge count={video.reportCount} /></div>
       </div>
-      <button className="btn" type="button"><Eye size={16} /></button>
+      <button aria-label="Xem chi tiết video" className="btn" type="button"><Eye size={16} /></button>
     </article>
   );
 }

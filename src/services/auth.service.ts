@@ -1,9 +1,11 @@
 import axios, { type AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
 import { apiClient } from './http';
 
-const ACCESS_TOKEN_KEY = 'viora_admin_access_token';
-const USER_KEY = 'viora_admin_user';
-const AUTH_CHANGE_EVENT = 'viora-admin-auth-change';
+const ACCESS_TOKEN_KEY = 'ankt_admin_access_token';
+const USER_KEY = 'ankt_admin_user';
+const AUTH_CHANGE_EVENT = 'ankt-admin-auth-change';
+const LEGACY_ACCESS_TOKEN_KEY = 'viora_admin_access_token';
+const LEGACY_USER_KEY = 'viora_admin_user';
 
 type RetryRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
@@ -48,11 +50,11 @@ const authClient = axios.create({
 });
 
 export function getAccessToken() {
-  return localStorage.getItem(ACCESS_TOKEN_KEY);
+  return readMigratedStorage(ACCESS_TOKEN_KEY, LEGACY_ACCESS_TOKEN_KEY);
 }
 
 export function getCurrentUser() {
-  const raw = localStorage.getItem(USER_KEY);
+  const raw = readMigratedStorage(USER_KEY, LEGACY_USER_KEY);
   if (!raw) return null;
 
   try {
@@ -203,7 +205,21 @@ function clearSession() {
 function clearStoredSession() {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  localStorage.removeItem(LEGACY_ACCESS_TOKEN_KEY);
+  localStorage.removeItem(LEGACY_USER_KEY);
   delete apiClient.defaults.headers.common.Authorization;
+}
+
+function readMigratedStorage(key: string, legacyKey: string) {
+  const current = localStorage.getItem(key);
+  if (current !== null) return current;
+
+  const legacy = localStorage.getItem(legacyKey);
+  if (legacy !== null) {
+    localStorage.setItem(key, legacy);
+    localStorage.removeItem(legacyKey);
+  }
+  return legacy;
 }
 
 function expireSession() {

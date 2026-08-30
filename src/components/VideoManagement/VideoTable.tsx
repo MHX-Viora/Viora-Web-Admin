@@ -8,16 +8,16 @@ export function VideoTable({ videos }: { videos: AdminVideo[] }) {
         <table className="user-table post-table">
           <thead>
             <tr>
-              <th>Người đăng</th>
-              <th>Loại</th>
-              <th>Mô tả video</th>
-              <th>Trạng thái</th>
-              <th>Cảm xúc</th>
-              <th>Bình luận</th>
-              <th>Chia sẻ</th>
-              <th>Báo cáo</th>
-              <th>Ngày đăng</th>
-              <th>Thao tác</th>
+              <th className="column-author">Người đăng</th>
+              <th className="column-type table-column-secondary">Loại</th>
+              <th className="column-content">Mô tả video</th>
+              <th className="column-status">Trạng thái</th>
+              <th className="column-engagement table-column-secondary">Cảm xúc</th>
+              <th className="column-engagement table-column-secondary">Bình luận</th>
+              <th className="column-engagement table-column-secondary">Chia sẻ</th>
+              <th className="column-report">Báo cáo</th>
+              <th className="column-date">Ngày đăng</th>
+              <th className="column-action"><span className="sr-only">Thao tác</span></th>
             </tr>
           </thead>
           <tbody>{videos.map((video) => <VideoRow key={video.id} video={video} />)}</tbody>

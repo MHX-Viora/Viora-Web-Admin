@@ -1,11 +1,12 @@
 {
-  "name": "viora-admin",
+  "name": "ankt-admin",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },

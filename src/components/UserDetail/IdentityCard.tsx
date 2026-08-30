@@ -8,7 +8,7 @@ export function IdentityCard({ user, onPreview }: { user: AdminUserDetail; onPre
   const identityStatus = Number(identity?.status ?? user.identityStatus);
 
   return (
-    <section className="user-card">
+    <section className="user-card identity-card">
       <h2>Thông tin xác thực CCCD</h2>
       {!identity ? (
         <div className="empty-inline">

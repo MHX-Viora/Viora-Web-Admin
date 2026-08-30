@@ -13,7 +13,7 @@ const statConfig = [
 
 export function UserStatisticsCard({ user }: { user: AdminUserDetail }) {
   return (
-    <section className="user-card">
+    <section className="user-card user-statistics-card">
       <h2>Thống kê</h2>
       <div className="user-stat-grid">
         {statConfig.map(([key, label, Icon]) => (

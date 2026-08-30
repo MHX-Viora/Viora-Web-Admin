@@ -56,7 +56,7 @@ export function ReportDetailPage() {
         actions={<div className="row-actions"><BackButton /><button className="btn" onClick={() => void query.refetch()} type="button"><RefreshCw size={16} />Làm mới</button></div>}
       />
       <div className="post-detail-layout">
-        <div className="user-card">
+        <div className="user-card report-summary-card">
           <h2>Nội dung báo cáo</h2>
           <div className="detail-grid">
             <span>Người báo cáo</span><strong>{report.reporterDisplayName || '-'}</strong>
@@ -70,7 +70,7 @@ export function ReportDetailPage() {
           <h3>Mô tả</h3>
           <p className="post-full-content">{report.description || 'Không có mô tả.'}</p>
         </div>
-        <div className="user-card">
+        <div className="user-card report-review-card">
           <h2>Đối tượng bị báo cáo</h2>
           <ReportTargetDetails target={query.data.target} targetId={report.targetId} />
           <div className="action-grid">

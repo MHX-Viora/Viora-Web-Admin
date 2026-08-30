@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LockKeyhole, ShieldCheck } from 'lucide-react';
+import { LockKeyhole } from 'lucide-react';
 import { toast } from 'sonner';
 import { login } from '../services/auth.service';
 
@@ -30,7 +30,7 @@ export function LoginPage({ onLogin }: { onLogin: () => void }) {
     <main className="login-page">
       <section className="login-panel">
         <div className="login-brand">
-          <ShieldCheck size={30} />
+          <img alt="" className="login-brand-logo" src="/ankt-logo.png" />
           <div>
             <strong>ANKT Admin</strong>
             <span>Trang quản trị hệ thống</span>

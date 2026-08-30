@@ -8,7 +8,7 @@ export function AccountInfoCard({ user }: { user: AdminUserDetail }) {
   const identityStatus = Number(user.identity?.status ?? user.identityStatus);
 
   return (
-    <section className="user-card">
+    <section className="user-card account-info-card">
       <h2>Thông tin tài khoản</h2>
       <div className="info-grid account-info-grid">
         <span>ID người dùng<strong className="mono-value">{user.id}</strong></span>

@@ -12,18 +12,18 @@ export function UserRow({ user }: { user: User }) {
 
   return (
     <tr onClick={openDetail}>
-      <td><UserAvatar src={user.avatarUrl} name={user.name} /></td>
-      <td><div className="user-name-cell"><strong>{user.name}</strong><span>{user.id}</span></div></td>
-      <td className="optional-tablet">{user.email}</td>
-      <td>{user.phone ?? '-'}</td>
-      <td><UserStatusBadge status={user.status} /></td>
-      <td><UserIdentityBadge status={user.identityStatus} /></td>
-      <td><AccountStyleBadge value={user.accountStyle} /></td>
-      <td>{user.verified ? <CheckCircle className="verified-icon" size={18} /> : <XCircle className="unverified-icon" size={18} />}</td>
-      <td>{formatNumber(user.postCount)}</td>
-      <td>{formatNumber(user.friendCount)}</td>
-      <td><DateCell value={user.createdAt} /></td>
-      <td><button className="btn" onClick={(event) => { event.stopPropagation(); openDetail(); }} type="button"><Eye size={16} />Xem</button></td>
+      <td className="column-avatar"><UserAvatar src={user.avatarUrl} name={user.name} /></td>
+      <td className="column-user"><div className="user-name-cell"><strong>{user.name}</strong><span>{user.id}</span></div></td>
+      <td className="column-email">{user.email}</td>
+      <td className="column-phone table-column-secondary">{user.phone ?? '-'}</td>
+      <td className="column-status"><UserStatusBadge status={user.status} /></td>
+      <td className="column-identity"><UserIdentityBadge status={user.identityStatus} /></td>
+      <td className="column-account table-column-secondary"><AccountStyleBadge value={user.accountStyle} /></td>
+      <td className="column-verified table-column-secondary">{user.verified ? <CheckCircle className="verified-icon" size={16} /> : <XCircle className="unverified-icon" size={16} />}</td>
+      <td className="column-metric table-column-secondary">{formatNumber(user.postCount)}</td>
+      <td className="column-metric table-column-secondary">{formatNumber(user.friendCount)}</td>
+      <td className="column-date"><DateCell value={user.createdAt} /></td>
+      <td className="column-action"><button aria-label={`Xem chi tiết ${user.name}`} className="table-action-button" onClick={(event) => { event.stopPropagation(); openDetail(); }} title="Xem chi tiết" type="button"><Eye size={15} /></button></td>
     </tr>
   );
 }
@@ -38,7 +38,7 @@ export function UserCardRow({ user }: { user: User }) {
         <span>{user.email}</span>
         <div className="badge-row"><UserStatusBadge status={user.status} /><AccountStyleBadge value={user.accountStyle} /><UserIdentityBadge status={user.identityStatus} /></div>
       </div>
-      <button className="btn" type="button"><Eye size={16} /></button>
+      <button aria-label={`Xem chi tiết ${user.name}`} className="btn" type="button"><Eye size={16} /></button>
     </article>
   );
 }
