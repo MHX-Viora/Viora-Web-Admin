@@ -19,6 +19,7 @@ import { LegalDocumentsPage } from './pages/LegalDocumentsPage';
 import { MiniAppsPage } from './pages/MiniAppsPage';
 import { MiniAppDetailPage } from './pages/MiniAppDetailPage';
 import { DevelopersPage } from './pages/DevelopersPage';
+import { StickerPacksPage } from './pages/StickerPacksPage';
 import { isAuthenticated, setupAuthInterceptors, subscribeAuthChange } from './services/auth.service';
 
 const queryClient = new QueryClient({
@@ -92,6 +93,7 @@ export default function App() {
               <Route path="mini-apps" element={<MiniAppsPage />} />
               <Route path="mini-apps/:id" element={<MiniAppDetailPage />} />
               <Route path="developers" element={<DevelopersPage />} />
+              <Route path="stickers" element={<StickerPacksPage />} />
             </Route>
             <Route path="*" element={<Navigate to={authenticated ? '/' : '/login'} replace />} />
           </Routes>

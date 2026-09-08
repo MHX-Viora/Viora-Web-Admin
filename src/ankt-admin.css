@@ -878,3 +878,18 @@ td,
 @media (prefers-reduced-motion: reduce) {
   .dashboard-kpi { transition: none; }
 }
+
+.admin-sticker-grid { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr) 300px; }
+.sticker-editor, .sticker-detail { background: var(--surface, #fff); border: 1px solid var(--border, #d9dee5); border-radius: 12px; padding: 18px; }
+.sticker-editor { align-self: start; display: grid; gap: 12px; }
+.sticker-editor label { display: grid; gap: 6px; }
+.sticker-editor .check { align-items: center; display: flex; }
+.sticker-pack-cell { align-items: center; display: flex; gap: 10px; }
+.sticker-pack-cell img { border-radius: 8px; height: 42px; object-fit: cover; width: 42px; }
+.sticker-detail { margin-top: 20px; }
+.sticker-upload-row { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; }
+.sticker-upload-row input:not([hidden]) { min-width: 180px; }
+.sticker-admin-list { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); margin-top: 16px; }
+.sticker-admin-list article { align-items: center; border: 1px solid var(--border, #d9dee5); border-radius: 10px; display: grid; gap: 8px; padding: 10px; }
+.sticker-admin-list img { aspect-ratio: 1; object-fit: contain; width: 100%; }
+@media (max-width: 900px) { .admin-sticker-grid { grid-template-columns: 1fr; } }
