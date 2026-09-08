@@ -6,11 +6,19 @@ const app = readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8');
 const layout = readFileSync(new URL('../src/layouts/AdminLayout.tsx', import.meta.url), 'utf8');
 const service = readFileSync(new URL('../src/services/admin-sticker.service.ts', import.meta.url), 'utf8');
 const page = readFileSync(new URL('../src/pages/StickerPacksPage.tsx', import.meta.url), 'utf8');
+const types = readFileSync(new URL('../src/types/sticker.ts', import.meta.url), 'utf8');
 
 test('admin exposes sticker management through protected API routes', () => {
   assert.match(app, /path="stickers"/);
   assert.match(layout, /to: '\/stickers'/);
   assert.match(service, /\/api\/admin\/sticker-packs/);
+});
+
+test('sticker packs have no manual sort order', () => {
+  const adminPackType = types.slice(types.indexOf('export type AdminStickerPack'), types.indexOf('export type Sticker ='));
+  assert.doesNotMatch(page, /<label>Thứ tự/);
+  assert.doesNotMatch(adminPackType, /sortOrder/);
+  assert.doesNotMatch(service, /form\.append\('sortOrder'/);
 });
 
 test('pack thumbnail is selected locally and uploaded with creation', () => {

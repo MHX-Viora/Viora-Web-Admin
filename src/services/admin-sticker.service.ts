@@ -10,7 +10,6 @@ export const createStickerPack = async (input: SaveStickerPack, thumbnail: File)
   form.append('price', String(input.price));
   form.append('isFeatured', String(input.isFeatured));
   form.append('isActive', String(input.isActive));
-  form.append('sortOrder', String(input.sortOrder));
   if (input.availableFrom) form.append('availableFrom', input.availableFrom);
   if (input.availableUntil) form.append('availableUntil', input.availableUntil);
   form.append('thumbnail', thumbnail);
