@@ -30,3 +30,9 @@ test('pack thumbnail is selected locally and uploaded with creation', () => {
   assert.match(service, /\/thumbnail/);
   assert.match(page, /uploadStickerThumbnail/);
 });
+
+test('selected pack thumbnail is previewed before upload', () => {
+  assert.match(page, /URL\.createObjectURL\(file\)/);
+  assert.match(page, /URL\.revokeObjectURL/);
+  assert.match(page, /src=\{thumbnailObjectUrl \|\| draft\.thumbnailUrl\}/);
+});
