@@ -6,6 +6,7 @@ const app = readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8');
 const layout = readFileSync(new URL('../src/layouts/AdminLayout.tsx', import.meta.url), 'utf8');
 const service = readFileSync(new URL('../src/services/admin-sticker.service.ts', import.meta.url), 'utf8');
 const page = readFileSync(new URL('../src/pages/StickerPacksPage.tsx', import.meta.url), 'utf8');
+const styles = readFileSync(new URL('../src/ankt-admin.css', import.meta.url), 'utf8');
 const types = readFileSync(new URL('../src/types/sticker.ts', import.meta.url), 'utf8');
 
 test('admin exposes sticker management through protected API routes', () => {
@@ -35,4 +36,19 @@ test('selected pack thumbnail is previewed before upload', () => {
   assert.match(page, /URL\.createObjectURL\(file\)/);
   assert.match(page, /URL\.revokeObjectURL/);
   assert.match(page, /src=\{thumbnailObjectUrl \|\| draft\.thumbnailUrl\}/);
+});
+
+test('thumbnail picker is a square preview that remains replaceable', () => {
+  assert.match(page, /className="sticker-thumbnail-picker"/);
+  assert.match(page, /aria-label=\{thumbnailPreviewUrl \? 'Thay ảnh đại diện' : 'Chọn ảnh đại diện'\}/);
+  assert.match(page, /className="sticker-thumbnail-input"/);
+  assert.match(page, /event\.currentTarget\.value = ''/);
+  assert.match(styles, /\.sticker-thumbnail-picker\s*\{[^}]*aspect-ratio:\s*1/s);
+  assert.match(styles, /\.sticker-thumbnail-picker:hover/);
+  assert.match(styles, /\.sticker-thumbnail-picker:focus-within/);
+});
+
+test('missing sticker API reports the deployment problem', () => {
+  assert.match(page, /response\?\.status === 404/);
+  assert.match(page, /API quản lý nhãn dán chưa được triển khai trên máy chủ/);
 });
