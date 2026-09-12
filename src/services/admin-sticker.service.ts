@@ -21,7 +21,7 @@ export const createSticker = async (packId: string, input: SaveSticker) => (awai
 export const setStickerActive = async (id: string, isActive: boolean) => { await apiClient.patch(`/api/admin/sticker-packs/stickers/${encodeURIComponent(id)}/active`, { isActive }); };
 export const uploadStickerImage = async (packId: string, file: File) => {
   const form = new FormData(); form.append('file', file);
-  return (await apiClient.post<{ url: string }>(`/api/admin/sticker-packs/${encodeURIComponent(packId)}/upload`, form, { headers: { 'Content-Type': 'multipart/form-data' } })).data.url;
+  return (await apiClient.post<{ url: string }>(`/api/admin/sticker-packs/${encodeURIComponent(packId)}/upload`, form)).data.url;
 };
 export const uploadStickerThumbnail = async (packId: string, file: File) => {
   const form = new FormData(); form.append('file', file);

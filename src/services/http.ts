@@ -4,9 +4,6 @@ import type { PageResult } from '../types/admin';
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL?.trim() ?? '',
   withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 export function getErrorMessage(error: unknown) {

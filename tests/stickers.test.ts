@@ -5,6 +5,7 @@ import test from 'node:test';
 const app = readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8');
 const layout = readFileSync(new URL('../src/layouts/AdminLayout.tsx', import.meta.url), 'utf8');
 const service = readFileSync(new URL('../src/services/admin-sticker.service.ts', import.meta.url), 'utf8');
+const http = readFileSync(new URL('../src/services/http.ts', import.meta.url), 'utf8');
 const page = readFileSync(new URL('../src/pages/StickerPacksPage.tsx', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../src/ankt-admin.css', import.meta.url), 'utf8');
 const types = readFileSync(new URL('../src/types/sticker.ts', import.meta.url), 'utf8');
@@ -30,6 +31,11 @@ test('pack thumbnail is selected locally and uploaded with creation', () => {
   assert.match(service, /createStickerPack.*thumbnail: File/);
   assert.match(service, /\/thumbnail/);
   assert.match(page, /uploadStickerThumbnail/);
+});
+
+test('the admin HTTP client lets Axios select the media type for FormData', () => {
+  assert.match(service, /new FormData\(\)[\s\S]*form\.append\('thumbnail', thumbnail\)/);
+  assert.doesNotMatch(http, /headers:\s*\{\s*'Content-Type':\s*'application\/json'/);
 });
 
 test('selected pack thumbnail is previewed before upload', () => {
