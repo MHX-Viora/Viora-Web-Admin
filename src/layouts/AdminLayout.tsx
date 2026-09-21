@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell, ChevronLeft, ChevronRight, ClipboardCheck, Command, FileText, Flag,
   Hash, Home, LogOut, Menu, MessageSquare, Moon, ScrollText,
-  Search, ShieldCheck, Sun, Users, Video, AppWindow, Code2, Sticker,
+  Search, ShieldCheck, Sun, Users, Video, AppWindow, Code2, Sticker, WalletCards, Megaphone,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { UserAvatar } from '../components/common';
@@ -14,6 +14,10 @@ type MenuItem = { to: string; label: string; icon: LucideIcon };
 type MenuGroup = { label: string; items: MenuItem[] };
 
 const menuGroups: MenuGroup[] = [
+  {
+    label: 'Tài chính',
+    items: [{ to: '/finance', label: 'Ví & giao dịch', icon: WalletCards }],
+  },
   {
     label: 'Tổng quan',
     items: [{ to: '/', label: 'Bảng điều khiển', icon: Home }],
@@ -30,6 +34,7 @@ const menuGroups: MenuGroup[] = [
     items: [
       { to: '/reports', label: 'Báo cáo', icon: Flag },
       { to: '/identities', label: 'Xác thực danh tính', icon: ShieldCheck },
+      { to: '/advertisements', label: 'Quảng cáo', icon: Megaphone },
     ],
   },
   {

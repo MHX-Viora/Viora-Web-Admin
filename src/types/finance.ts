@@ -1,0 +1,4 @@
+export type FinancePage<T> = { data: T[]; page: number; pageSize: number; totalItems: number; totalPages: number };
+export type AdminWallet = { id: string; userId: string; displayName: string; availableBalance: number; heldBalance: number; currency: string; status: number; createdAt: string; updatedAt: string };
+export type AdminWalletTransaction = { id: string; walletId: string; userId: string; displayName: string; type: number; amount: number; status: number; referenceType: string; referenceId: string; description: string | null; createdAt: string };
+export type AdminPayment = { id: string; userId: string; displayName: string; amount: number; currency: string; provider: string; providerOrderCode: number; providerTransactionId: string | null; status: number; createdAt: string; paidAt: string | null };
