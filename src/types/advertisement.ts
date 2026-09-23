@@ -5,6 +5,10 @@ export type AdminAdvertisement = {
   placement: number;
   objective: number;
   ctaType: number;
+  targetingMode: number;
+  minimumAge: number | null;
+  maximumAge: number | null;
+  targetLocation: string | null;
   destinationUrl: string | null;
   totalBudget: number;
   spentAmount: number;
@@ -18,7 +22,8 @@ export type AdminAdvertisement = {
   clickThroughRate: number;
   content: {
     content: string | null;
-    article: { title: string } | null;
+    article: { title: string; thumbnailUrl: string | null; preview: string | null } | null;
+    media: { id: string; mediaUrl: string; thumbnailUrl: string | null }[];
     user: { displayName: string; avatarUrl: string | null };
   };
 };
