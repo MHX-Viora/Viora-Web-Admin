@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LockKeyhole } from 'lucide-react';
 import { toast } from 'sonner';
 import { login } from '../services/auth.service';
+import { getErrorMessage } from '../services/http';
 
 export function LoginPage({ onLogin }: { onLogin: () => void }) {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export function LoginPage({ onLogin }: { onLogin: () => void }) {
       toast.success('Đăng nhập thành công');
       navigate('/', { replace: true });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Không đăng nhập được');
+      toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -42,7 +43,7 @@ export function LoginPage({ onLogin }: { onLogin: () => void }) {
         </div>
         <form className="login-form" onSubmit={submit}>
           <label>
-            Tài khoản
+            Email hoặc số điện thoại
             <input value={identifier} onChange={(event) => setIdentifier(event.target.value)} autoComplete="username" required />
           </label>
           <label>

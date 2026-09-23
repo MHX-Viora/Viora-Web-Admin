@@ -104,9 +104,15 @@ export async function login(payload: LoginPayload) {
     await authClient.get('/api/admin/dashboard', {
       headers: { Authorization: `Bearer ${result.accessToken}` },
     });
-  } catch {
+  } catch (error) {
     clearSession();
-    throw new Error('Token quản trị không được máy chủ chấp nhận. Vui lòng đăng nhập lại.');
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      throw new Error('Máy chủ admin không chấp nhận token đăng nhập.', { cause: error });
+    }
+    if (axios.isAxiosError(error) && error.response?.status === 403) {
+      throw new Error('Tài khoản chưa được cấp quyền quản trị trên máy chủ admin.', { cause: error });
+    }
+    throw new Error('Không kiểm tra được quyền quản trị: ' + (axios.isAxiosError(error) ? `HTTP ${error.response?.status ?? 'không có phản hồi'}` : String(error)), { cause: error });
   }
 
   setSession(result.accessToken, result.user);
