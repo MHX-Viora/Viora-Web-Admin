@@ -31,7 +31,7 @@ export type LoginPayload = {
 type LoginResponse = {
   status: number;
   accessToken: string;
-  user: AdminUser;
+  user: AdminUser | null;
 };
 
 type RefreshTokenResponse = {
@@ -91,11 +91,12 @@ export async function login(payload: LoginPayload) {
   const { data } = await authClient.post<unknown>('/api/accounts/login', { identifier, password });
   const result = unwrapApiData<LoginResponse>(parseApiData(data));
 
-  if (result.status !== 1 || !result.accessToken || !result.user) {
+  if (result.status !== 1 || !result.accessToken) {
     throw new Error('Phản hồi đăng nhập không hợp lệ');
   }
 
-  if (result.user.role !== 2) {
+  const identity = readTokenIdentity(result.accessToken);
+  if (!identity || identity.role !== 2 || (result.user && result.user.role !== 2)) {
     clearSession();
     throw new Error('Tài khoản không có quyền quản trị');
   }
@@ -115,7 +116,16 @@ export async function login(payload: LoginPayload) {
     throw new Error('Không kiểm tra được quyền quản trị: ' + (axios.isAxiosError(error) ? `HTTP ${error.response?.status ?? 'không có phản hồi'}` : String(error)), { cause: error });
   }
 
-  setSession(result.accessToken, result.user);
+  const adminUser = result.user ?? {
+    id: identity.userId ?? identity.accountId,
+    accountId: identity.accountId,
+    displayName: 'ANKT Admin',
+    gender: 0,
+    role: identity.role,
+    isVerified: false,
+    verificationStatus: 0,
+  };
+  setSession(result.accessToken, adminUser);
   return result;
 }
 
@@ -257,6 +267,23 @@ function isJwtExpired(token: string) {
     return typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now();
   } catch {
     return true;
+  }
+}
+
+function readTokenIdentity(token: string) {
+  try {
+    const payloadSegment = token.split('.')[1];
+    if (!payloadSegment) return null;
+    const base64 = payloadSegment.replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64)) as Record<string, unknown>;
+    if (typeof payload.sub !== 'string' || typeof payload.role !== 'number') return null;
+    return {
+      accountId: payload.sub,
+      userId: typeof payload.user_id === 'string' ? payload.user_id : null,
+      role: payload.role,
+    };
+  } catch {
+    return null;
   }
 }
 
