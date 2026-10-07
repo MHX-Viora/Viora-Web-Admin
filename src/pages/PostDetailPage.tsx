@@ -15,22 +15,25 @@ import { PostDetailSkeleton } from '../components/PostDetail/LoadingSkeleton';
 import { usePostDetail } from '../hooks/usePostDetail';
 import { getErrorMessage } from '../services/http';
 import { moderateAdminPost } from '../services/admin-post.service';
+import type { PostManagementScope } from '../types/admin-post';
 
 type PendingAction = 'hide' | 'restore' | 'delete';
 
-export function PostDetailPage() {
+export function PostDetailPage({ scope = 'posts' }: { scope?: PostManagementScope }) {
+  const label = scope === 'articles' ? 'bài báo' : 'bài viết';
+  const titleLabel = scope === 'articles' ? 'Bài báo' : 'Bài viết';
   const { id } = useParams();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
   const queryClient = useQueryClient();
-  const query = usePostDetail(id);
+  const query = usePostDetail(id, scope);
   const mutation = useMutation({
-    mutationFn: (action: PendingAction) => moderateAdminPost(id ?? '', action),
+    mutationFn: (action: PendingAction) => moderateAdminPost(id ?? '', action, scope),
     onSuccess: () => {
-      toast.success('Đã cập nhật bài viết');
+      toast.success(`Đã cập nhật ${label}`);
       setPendingAction(null);
       void query.refetch();
-      void queryClient.invalidateQueries({ queryKey: ['posts'] });
+      void queryClient.invalidateQueries({ queryKey: [scope] });
       void queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
     onError: (error) => toast.error(getErrorMessage(error)),
@@ -41,8 +44,8 @@ export function PostDetailPage() {
   if (query.isError || !query.data) {
     return (
       <section>
-        <PageHeader title="Bài viết không tồn tại" actions={<BackButton />} />
-        <ErrorView message={query.error ? getErrorMessage(query.error) : 'Bài viết không tồn tại.'} onRetry={() => void query.refetch()} />
+        <PageHeader title={`${titleLabel} không tồn tại`} actions={<BackButton scope={scope} />} />
+        <ErrorView message={query.error ? getErrorMessage(query.error) : `${titleLabel} không tồn tại.`} onRetry={() => void query.refetch()} />
       </section>
     );
   }
@@ -54,16 +57,16 @@ export function PostDetailPage() {
       <div className="breadcrumb-row">
         <Link to="/">Bảng điều khiển</Link>
         <span>/</span>
-        <Link to="/posts">Bài viết</Link>
+        <Link to={`/${scope}`}>{titleLabel}</Link>
         <span>/</span>
         <strong>Chi tiết</strong>
       </div>
       <PageHeader
-        title="Chi tiết bài viết"
+        title={`Chi tiết ${label}`}
         description={post.displayName}
         actions={
           <div className="row-actions">
-            <BackButton />
+            <BackButton scope={scope} />
             <button className="btn" onClick={() => void query.refetch()} type="button"><RefreshCw size={16} />Làm mới</button>
             <button className="btn" onClick={() => setPendingAction('hide')} type="button">Ẩn</button>
             <button className="btn" onClick={() => setPendingAction('restore')} type="button">Khôi phục</button>
@@ -87,7 +90,7 @@ export function PostDetailPage() {
       {pendingAction ? (
         <ConfirmDialog
           title="Xác nhận thao tác"
-          description={`Bạn muốn ${getActionLabel(pendingAction)} bài viết này?`}
+          description={`Bạn muốn ${getActionLabel(pendingAction)} ${label} này?`}
           confirmText="Đồng ý"
           loading={mutation.isPending}
           onCancel={() => setPendingAction(null)}
@@ -98,8 +101,8 @@ export function PostDetailPage() {
   );
 }
 
-function BackButton() {
-  return <Link className="btn" to="/posts"><ArrowLeft size={16} />Quay lại</Link>;
+function BackButton({ scope }: { scope: PostManagementScope }) {
+  return <Link className="btn" to={`/${scope}`}><ArrowLeft size={16} />Quay lại</Link>;
 }
 
 function getActionLabel(action: PendingAction) {

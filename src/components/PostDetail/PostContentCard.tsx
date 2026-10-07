@@ -4,7 +4,7 @@ export function PostContentCard({ post }: { post: AdminPostDetail }) {
   return (
     <section className="user-card">
       <h2>{post.postType === 2 ? 'Nội dung bài báo' : 'Nội dung bài viết'}</h2>
-      {post.content ? <p className="post-full-content">{post.content}</p> : <p>Bài viết không có nội dung.</p>}
+      {post.content ? <p className="post-full-content">{post.content}</p> : <p>{post.postType === 2 ? 'Bài báo' : 'Bài viết'} không có nội dung.</p>}
       {post.postType === 2 && <article className="admin-article-content">{[...(post.articleBlocks ?? [])].sort((a, b) => a.orderIndex - b.orderIndex).map(block => {
         if (block.type === 5) return <hr key={block.id} />;
         if (block.type === 1) return <h3 key={block.id}>{block.content}</h3>;

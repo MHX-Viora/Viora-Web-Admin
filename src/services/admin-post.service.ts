@@ -1,5 +1,5 @@
 import { apiClient, normalizePageResult, unwrapApiData } from './http';
-import type { AdminPost, AdminPostDetail, PostListParams } from '../types/admin-post';
+import type { AdminPost, AdminPostDetail, PostListParams, PostManagementScope } from '../types/admin-post';
 
 type ApiPost = Partial<AdminPost> & {
   articleBlocks?: AdminPostDetail['articleBlocks'];
@@ -19,21 +19,21 @@ type ApiPost = Partial<AdminPost> & {
   reports?: number;
 };
 
-export async function getAdminPosts(params: PostListParams) {
-  const { data } = await apiClient.get<unknown>('/api/admin/posts', { params });
+export async function getAdminPosts(params: PostListParams, scope: PostManagementScope = 'posts') {
+  const { data } = await apiClient.get<unknown>(`/api/admin/${scope}`, { params });
   const result = normalizePageResult<ApiPost>(data);
   return { ...result, items: result.items.map(mapPost) };
 }
 
-export async function getAdminPost(id: string) {
-  const { data } = await apiClient.get<unknown>(`/api/admin/posts/${id}`);
+export async function getAdminPost(id: string, scope: PostManagementScope = 'posts') {
+  const { data } = await apiClient.get<unknown>(`/api/admin/${scope}/${id}`);
   return mapPostDetail(unwrapApiData<ApiPost>(data));
 }
 
-export async function moderateAdminPost(id: string, action: 'hide' | 'restore' | 'delete') {
+export async function moderateAdminPost(id: string, action: 'hide' | 'restore' | 'delete', scope: PostManagementScope = 'posts') {
   const { data } = action === 'delete'
-    ? await apiClient.delete<unknown>(`/api/admin/posts/${id}`)
-    : await apiClient.patch<unknown>(`/api/admin/posts/${id}/${action}`);
+    ? await apiClient.delete<unknown>(`/api/admin/${scope}/${id}`)
+    : await apiClient.patch<unknown>(`/api/admin/${scope}/${id}/${action}`);
   return unwrapApiData(data);
 }
 

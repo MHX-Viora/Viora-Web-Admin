@@ -1,7 +1,7 @@
-import type { AdminPost } from '../../types/admin-post';
+import type { AdminPost, PostManagementScope } from '../../types/admin-post';
 import { PostCardRow, PostRow } from './PostRow';
 
-export function PostTable({ posts }: { posts: AdminPost[] }) {
+export function PostTable({ posts, scope = 'posts' }: { posts: AdminPost[]; scope?: PostManagementScope }) {
   return (
     <>
       <div className="user-table-card">
@@ -20,10 +20,10 @@ export function PostTable({ posts }: { posts: AdminPost[] }) {
               <th className="column-action"><span className="sr-only">Thao tác</span></th>
             </tr>
           </thead>
-          <tbody>{posts.map((post) => <PostRow key={post.id} post={post} />)}</tbody>
+          <tbody>{posts.map((post) => <PostRow key={post.id} post={post} scope={scope} />)}</tbody>
         </table>
       </div>
-      <div className="mobile-user-list">{posts.map((post) => <PostCardRow key={post.id} post={post} />)}</div>
+      <div className="mobile-user-list">{posts.map((post) => <PostCardRow key={post.id} post={post} scope={scope} />)}</div>
     </>
   );
 }

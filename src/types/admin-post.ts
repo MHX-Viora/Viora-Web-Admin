@@ -1,3 +1,5 @@
+export type PostManagementScope = 'posts' | 'articles';
+
 export type AdminPost = {
   id: string;
   userId: string;

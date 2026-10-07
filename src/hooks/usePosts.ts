@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { getAdminPosts } from '../services/admin-post.service';
+import type { PostManagementScope } from '../types/admin-post';
 
-export function usePosts() {
+export function usePosts(scope: PostManagementScope = 'posts') {
   const [searchParams, setSearchParams] = useSearchParams();
   const [keywordDraft, setKeywordDraft] = useState(searchParams.get('keyword') ?? '');
 
@@ -13,7 +14,6 @@ export function usePosts() {
   const userId = searchParams.get('userId') ?? '';
   const reported = searchParams.get('reported') ?? '';
   const status = searchParams.get('status') ?? '';
-  const postType = searchParams.get('postType') ?? '';
   const sortBy = searchParams.get('sortBy') ?? 'createdAt';
   const sortDirection = searchParams.get('sortDirection') ?? 'desc';
 
@@ -23,12 +23,8 @@ export function usePosts() {
   );
 
   const query = useQuery({
-    queryKey: ['posts', params, postType],
-    queryFn: async () => {
-      const result = await getAdminPosts(params);
-      if (!postType) return result;
-      return { ...result, items: result.items.filter((post) => String(post.postType) === postType) };
-    },
+    queryKey: [scope, params],
+    queryFn: () => getAdminPosts(params, scope),
   });
 
   function update(next: Record<string, string | number | undefined>) {
@@ -40,7 +36,7 @@ export function usePosts() {
     setSearchParams(merged, { replace: true });
   }
 
-  return { query, state: { page, pageSize, keyword, keywordDraft, userId, reported, status, postType, sortBy, sortDirection }, setKeywordDraft, update };
+  return { query, state: { page, pageSize, keyword, keywordDraft, userId, reported, status, sortBy, sortDirection }, setKeywordDraft, update };
 }
 
 function readNumber(value: string | null, fallback: number) {

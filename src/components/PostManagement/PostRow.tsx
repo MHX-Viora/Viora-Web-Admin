@@ -1,13 +1,13 @@
 import { Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { UserAvatar } from '../common';
-import type { AdminPost } from '../../types/admin-post';
+import type { AdminPost, PostManagementScope } from '../../types/admin-post';
 import { formatNumber } from '../../utils/format';
 import { PostStatusBadge, PostTypeBadge, ReportBadge } from './PostBadges';
 
-export function PostRow({ post }: { post: AdminPost }) {
+export function PostRow({ post, scope = 'posts' }: { post: AdminPost; scope?: PostManagementScope }) {
   const navigate = useNavigate();
-  const openDetail = () => navigate(`/admin/posts/${post.id}`);
+  const openDetail = () => navigate(`/${scope}/${post.id}`);
 
   return (
     <tr onClick={openDetail}>
@@ -25,22 +25,22 @@ export function PostRow({ post }: { post: AdminPost }) {
       <td className="column-engagement table-column-secondary">{formatNumber(post.shareCount)}</td>
       <td className="column-report"><ReportBadge count={post.reportCount} /></td>
       <td className="column-date"><DateCell value={post.createdAt} /></td>
-      <td className="column-action"><button aria-label="Xem chi tiết bài viết" className="table-action-button" onClick={(event) => { event.stopPropagation(); openDetail(); }} title="Xem chi tiết" type="button"><Eye size={15} /></button></td>
+      <td className="column-action"><button aria-label={scope === 'articles' ? 'Xem chi tiết bài báo' : 'Xem chi tiết bài viết'} className="table-action-button" onClick={(event) => { event.stopPropagation(); openDetail(); }} title="Xem chi tiết" type="button"><Eye size={15} /></button></td>
     </tr>
   );
 }
 
-export function PostCardRow({ post }: { post: AdminPost }) {
+export function PostCardRow({ post, scope = 'posts' }: { post: AdminPost; scope?: PostManagementScope }) {
   const navigate = useNavigate();
   return (
-    <article className="mobile-user-card" onClick={() => navigate(`/admin/posts/${post.id}`)}>
+    <article className="mobile-user-card" onClick={() => navigate(`/${scope}/${post.id}`)}>
       <UserAvatar src={post.avatarUrl} name={post.displayName || 'User'} />
       <div>
         <strong>{post.displayName || '-'}</strong>
         <span className="post-content-clamp">{post.content || '-'}</span>
         <div className="badge-row"><PostTypeBadge type={post.postType} /><PostStatusBadge status={post.status} /><ReportBadge count={post.reportCount} /></div>
       </div>
-      <button aria-label="Xem chi tiết bài viết" className="btn" type="button"><Eye size={16} /></button>
+      <button aria-label={scope === 'articles' ? 'Xem chi tiết bài báo' : 'Xem chi tiết bài viết'} className="btn" type="button"><Eye size={16} /></button>
     </article>
   );
 }

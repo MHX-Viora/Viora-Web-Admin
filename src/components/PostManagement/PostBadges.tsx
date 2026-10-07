@@ -1,4 +1,4 @@
-const typeLabels: Record<number, string> = { 0: 'Bài viết', 1: 'Video' };
+const typeLabels: Record<number, string> = { 0: 'Bài viết', 1: 'Video', 2: 'Bài báo' };
 const statusLabels: Record<number, string> = { 0: 'Bản nháp', 1: 'Đã đăng', 2: 'Đã ẩn', 3: 'Đã xóa' };
 
 export function PostTypeBadge({ type }: { type: number }) {

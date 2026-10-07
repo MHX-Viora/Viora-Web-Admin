@@ -81,7 +81,10 @@ export default function App() {
               <Route path="users/:id" element={<UserDetailPage />} />
               <Route path="admin/users/:id" element={<UserDetailPage />} />
               <Route path="identities" element={<IdentitiesPage />} />
-              <Route path="posts" element={<PostsPage />} />
+              <Route path="posts" element={<PostsPage key="posts" />} />
+              <Route path="articles" element={<PostsPage key="articles" scope="articles" />} />
+              <Route path="articles/:id" element={<PostDetailPage scope="articles" />} />
+              <Route path="admin/articles/:id" element={<PostDetailPage scope="articles" />} />
               <Route path="posts/:id" element={<PostDetailPage />} />
               <Route path="admin/posts/:id" element={<PostDetailPage />} />
               <Route path="videos" element={<VideosPage />} />

@@ -8,21 +8,22 @@ import { PostTable } from '../components/PostManagement/PostTable';
 import { PostToolbar } from '../components/PostManagement/PostToolbar';
 import { usePosts } from '../hooks/usePosts';
 import { getErrorMessage } from '../services/http';
+import type { PostManagementScope } from '../types/admin-post';
 
-export function PostsPage() {
-  const { query, state, setKeywordDraft, update } = usePosts();
+export function PostsPage({ scope = 'posts' }: { scope?: PostManagementScope }) {
+  const label = scope === 'articles' ? 'bài báo' : 'bài viết';
+  const { query, state, setKeywordDraft, update } = usePosts(scope);
   const total = query.data?.total ?? 0;
 
   return (
     <section className="users-page">
       <PageHeader
-        title="Quản lý bài viết"
-        description={`Tổng cộng ${total} bài viết`}
+        title={`Quản lý ${label}`}
+        description={`Tổng cộng ${total} ${label}`}
         actions={<button className="btn" onClick={() => void query.refetch()} type="button"><RefreshCw size={16} />Refresh</button>}
       />
       <PostToolbar
         keywordDraft={state.keywordDraft}
-        postType={state.postType}
         status={state.status}
         reported={state.reported}
         userId={state.userId}
@@ -34,14 +35,15 @@ export function PostsPage() {
 
       {query.isLoading ? <PostTableSkeleton /> : null}
       {query.isError ? <ErrorView message={getErrorMessage(query.error)} onRetry={() => void query.refetch()} /> : null}
-      {query.data && query.data.items.length === 0 ? <PostEmptyState /> : null}
+      {query.data && query.data.items.length === 0 ? <PostEmptyState label={label} /> : null}
       {query.data && query.data.items.length > 0 ? (
         <>
-          <PostTable posts={query.data.items} />
+          <PostTable posts={query.data.items} scope={scope} />
           <PostPagination
             page={state.page}
             pageSize={state.pageSize}
             total={query.data.total}
+            label={label}
             onPage={(page) => update({ page })}
             onPageSize={(pageSize) => update({ pageSize, page: 1 })}
           />

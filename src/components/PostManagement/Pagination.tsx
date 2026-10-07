@@ -2,12 +2,14 @@ export function PostPagination({
   page,
   pageSize,
   total,
+  label = 'bài viết',
   onPage,
   onPageSize,
 }: {
   page: number;
   pageSize: number;
   total: number;
+  label?: string;
   onPage: (page: number) => void;
   onPageSize: (pageSize: number) => void;
 }) {
@@ -17,7 +19,7 @@ export function PostPagination({
 
   return (
     <div className="user-pagination">
-      <span><strong>{start}-{end}</strong> / {total} bài viết</span>
+      <span><strong>{start}-{end}</strong> / {total} {label}</span>
       <select value={pageSize} onChange={(event) => onPageSize(Number(event.target.value))}>
         {[10, 20, 50, 100].map((size) => <option key={size} value={size}>{size} / trang</option>)}
       </select>
