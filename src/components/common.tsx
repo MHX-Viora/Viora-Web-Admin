@@ -181,6 +181,8 @@ export function ConfirmDialog({
   description,
   confirmText = 'Xác nhận',
   loading,
+  confirmDisabled = false,
+  children,
   onCancel,
   onConfirm,
 }: {
@@ -188,6 +190,8 @@ export function ConfirmDialog({
   description: string;
   confirmText?: string;
   loading?: boolean;
+  confirmDisabled?: boolean;
+  children?: ReactNode;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
@@ -195,9 +199,10 @@ export function ConfirmDialog({
     <ModalFrame titleId="confirm-title" busy={loading} onClose={onCancel}>
         <h2 id="confirm-title">{title}</h2>
         <p>{description}</p>
+        {children}
         <div className="modal-actions">
           <button className="btn" onClick={onCancel} disabled={loading} type="button">Hủy</button>
-          <button className="btn danger" onClick={onConfirm} disabled={loading} type="button">
+          <button className="btn danger" onClick={onConfirm} disabled={loading || confirmDisabled} type="button">
             {loading ? <Loader2 className="spin" size={16} /> : null}
             {confirmText}
           </button>
