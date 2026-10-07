@@ -3,7 +3,7 @@ import { accountStatusLabels } from '../../types/admin-user';
 
 export function StatusBadge({ status }: { status?: string | number }) {
   const value = Number(status);
-  return <span className={`detail-badge account-${value}`}>{accountStatusLabels[value] ?? status ?? '-'}</span>;
+  return <span className={`detail-badge account-${value}`}>{accountStatusLabels[value] ?? 'Chưa xác định'}</span>;
 }
 
 export function VerifiedBadge({ verified }: { verified: boolean }) {

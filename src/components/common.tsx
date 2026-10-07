@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { AlertTriangle, Inbox, Loader2, Search, X } from 'lucide-react';
 import type { Status } from '../types/admin';
+import { ModalFrame } from './ModalFrame';
 
 export function PageHeader({ title, description, actions, eyebrow }: { title: string; description?: string; actions?: ReactNode; eyebrow?: string }) {
   return (
@@ -191,8 +192,7 @@ export function ConfirmDialog({
   onConfirm: () => void;
 }) {
   return (
-    <div className="modal-backdrop" role="presentation">
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <ModalFrame titleId="confirm-title" busy={loading} onClose={onCancel}>
         <h2 id="confirm-title">{title}</h2>
         <p>{description}</p>
         <div className="modal-actions">
@@ -202,7 +202,6 @@ export function ConfirmDialog({
             {confirmText}
           </button>
         </div>
-      </div>
-    </div>
+    </ModalFrame>
   );
 }

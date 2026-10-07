@@ -1,3 +1,4 @@
+import { formatVnd as money } from '../utils/money';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, Eye, RefreshCw, X } from 'lucide-react';
 import { useState } from 'react';
@@ -8,7 +9,6 @@ import { getErrorMessage } from '../services/http';
 
 const statuses = ['Bản nháp', 'Chờ duyệt', 'Đã duyệt', 'Đang chạy', 'Tạm dừng', 'Hoàn tất', 'Từ chối', 'Đã hủy'];
 const placements = ['Feed', 'Reels', 'Tin tức'];
-const money = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
 
 export function AdvertisementsPage() {
   const client = useQueryClient();

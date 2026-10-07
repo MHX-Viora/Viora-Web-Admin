@@ -1,3 +1,4 @@
+import { TechnicalDetails } from '../components/TechnicalDetails';
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
@@ -52,7 +53,7 @@ export function ReportDetailPage() {
       </div>
       <PageHeader
         title="Chi tiết báo cáo"
-        description={report.reporterDisplayName || report.reporterUserId}
+        description={report.reporterDisplayName || 'Báo cáo của người dùng'}
         actions={<div className="row-actions"><BackButton /><button className="btn" onClick={() => void query.refetch()} type="button"><RefreshCw size={16} />Làm mới</button></div>}
       />
       <div className="post-detail-layout">
@@ -60,15 +61,14 @@ export function ReportDetailPage() {
           <h2>Nội dung báo cáo</h2>
           <div className="detail-grid">
             <span>Người báo cáo</span><strong>{report.reporterDisplayName || '-'}</strong>
-            <span>ID người báo cáo</span><strong className="mono-value">{report.reporterUserId}</strong>
             <span>Đối tượng</span><strong><TargetTypeBadge value={report.targetType} /></strong>
-            <span>ID đối tượng</span><strong className="mono-value">{report.targetId}</strong>
             <span>Lý do</span><strong><ReasonBadge value={report.reason} /></strong>
             <span>Trạng thái</span><strong><ReportStatusBadge value={report.status} /></strong>
             <span>Ngày tạo</span><strong>{formatDate(report.createdAt)}</strong>
           </div>
           <h3>Mô tả</h3>
           <p className="post-full-content">{report.description || 'Không có mô tả.'}</p>
+          <TechnicalDetails values={{ 'Mã người báo cáo': report.reporterUserId, 'Mã đối tượng': report.targetId }} />
         </div>
         <div className="user-card report-review-card">
           <h2>Đối tượng bị báo cáo</h2>
@@ -99,7 +99,7 @@ function BackButton() {
 
 function ReportTargetDetails({ target, targetId }: { target: unknown; targetId: string }) {
   if (!isRecord(target)) {
-    return <div className="report-target-empty"><Eye size={28} /><strong>Không có dữ liệu chi tiết</strong><span>ID: {targetId}</span></div>;
+    return <div className="report-target-empty"><Eye size={28} /><strong>Không có dữ liệu chi tiết</strong><TechnicalDetails values={{ 'Mã đối tượng': targetId }} /></div>;
   }
   const displayName = text(target.displayName) || text(target.userName) || text(target.authorName) || 'Người dùng';
   const avatarUrl = text(target.avatarUrl);
@@ -120,11 +120,9 @@ function ReportTargetDetails({ target, targetId }: { target: unknown; targetId: 
         <div>
           <span>Chủ sở hữu nội dung</span>
           <strong>{displayName}</strong>
-          <small className="mono-value">{text(target.userId) || 'Không có User ID'}</small>
         </div>
       </div>
       <div className="report-target-meta">
-        <div><span>ID đối tượng</span><strong className="mono-value">{text(target.id) || targetId}</strong></div>
         <div><span>Loại nội dung</span><strong>{postTypeLabel(target.postType)}</strong></div>
         <div><span>Trạng thái</span><strong>{statusLabel(status)}</strong></div>
         <div><span>Quyền riêng tư</span><strong>{visibilityLabel(target.visibility)}</strong></div>
@@ -133,6 +131,7 @@ function ReportTargetDetails({ target, targetId }: { target: unknown; targetId: 
         <span>Nội dung</span>
         <p>{content || 'Nội dung không có văn bản.'}</p>
       </section>
+      <TechnicalDetails values={{ 'Mã đối tượng': text(target.id) || targetId, 'Mã chủ sở hữu': text(target.userId) }} />
       {media.length > 0 && (
         <div className="report-target-media">
           {media.map((item, index) => {

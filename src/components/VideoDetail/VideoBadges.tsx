@@ -6,9 +6,9 @@ export function VideoTypeBadge() {
 }
 
 export function VideoStatusBadge({ status }: { status: number }) {
-  return <span className={`post-badge post-status-${status}`}>{statusLabels[status] ?? status}</span>;
+  return <span className={`post-badge post-status-${status}`}>{statusLabels[status] ?? 'Chưa xác định'}</span>;
 }
 
 export function VideoVisibilityBadge({ visibility }: { visibility: number }) {
-  return <span className={`post-badge visibility-${visibility}`}>{visibilityLabels[visibility] ?? visibility}</span>;
+  return <span className={`post-badge visibility-${visibility}`}>{visibilityLabels[visibility] ?? 'Chưa xác định'}</span>;
 }

@@ -21,6 +21,7 @@ import { MiniAppDetailPage } from './pages/MiniAppDetailPage';
 import { DevelopersPage } from './pages/DevelopersPage';
 import { StickerPacksPage } from './pages/StickerPacksPage';
 import { FinancePage } from './pages/FinancePage';
+import { WithdrawalDetailPage } from './pages/WithdrawalDetailPage';
 import { AdvertisementsPage } from './pages/AdvertisementsPage';
 import { isAuthenticated, setupAuthInterceptors, subscribeAuthChange } from './services/auth.service';
 
@@ -97,6 +98,7 @@ export default function App() {
               <Route path="developers" element={<DevelopersPage />} />
               <Route path="stickers" element={<StickerPacksPage />} />
               <Route path="finance" element={<FinancePage />} />
+              <Route path="finance/withdrawals/:id" element={<WithdrawalDetailPage />} />
               <Route path="advertisements" element={<AdvertisementsPage />} />
             </Route>
             <Route path="*" element={<Navigate to={authenticated ? '/' : '/login'} replace />} />

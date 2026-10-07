@@ -1,3 +1,4 @@
+import { TechnicalDetails } from '../TechnicalDetails';
 import type { AdminPostDetail } from '../../types/admin-post';
 import { formatDate } from '../../utils/format';
 import { DetailPostStatusBadge, DetailPostTypeBadge, VisibilityBadge } from './PostBadges';
@@ -7,14 +8,13 @@ export function PostInformationCard({ post }: { post: AdminPostDetail }) {
     <section className="user-card">
       <h2>Thông tin bài viết</h2>
       <div className="info-grid">
-        <span>ID bài viết<strong className="mono-value">{post.id}</strong></span>
-        <span>ID người đăng<strong className="mono-value">{post.userId}</strong></span>
         <span>Địa điểm<strong>{post.location || '-'}</strong></span>
         <span>Ngày tạo<strong>{formatDate(post.createdAt)}</strong></span>
         <span>Hiển thị<strong><VisibilityBadge visibility={post.visibility} /></strong></span>
         <span>Trạng thái<strong><DetailPostStatusBadge status={post.status} /></strong></span>
         <span>Loại bài viết<strong><DetailPostTypeBadge type={post.postType} /></strong></span>
       </div>
+      <TechnicalDetails values={{ 'Mã bài viết': post.id, 'Mã người đăng': post.userId }} />
     </section>
   );
 }

@@ -14,6 +14,7 @@ import {
   type LegalInput,
 } from '../services/admin-legal.service';
 import { getErrorMessage } from '../services/http';
+import { TechnicalDetails } from '../components/TechnicalDetails';
 
 const labels = ['Điều khoản sử dụng', 'Chính sách bảo mật', 'Quyền truy cập ứng dụng', 'Tiêu chuẩn cộng đồng', 'Khác'];
 const empty: LegalInput = { type: 0, title: '', summary: '', content: '', languageCode: 'vi', version: '' };
@@ -191,6 +192,7 @@ export function LegalDocumentsPage() {
                 </dl>
                 <section><h3>Tóm tắt</h3><p className="legal-detail-summary">{detail.data.summary || 'Không có tóm tắt.'}</p></section>
                 <section><h3>Nội dung Markdown</h3><pre className="legal-markdown-preview">{detail.data.content || 'Không có nội dung.'}</pre></section>
+                <TechnicalDetails values={{ 'Mã tài liệu': detail.data.id }} />
                 <div className="legal-actions legal-detail-actions">
                   <button className="btn" onClick={() => { setDetailId(null); void versionFrom(detail.data!.id); }} type="button">Tạo phiên bản mới</button>
                   {!detail.data.isPublished && (

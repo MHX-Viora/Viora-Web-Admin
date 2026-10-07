@@ -10,7 +10,6 @@ export function VideoAuthorCard({ video }: { video: AdminVideoDetail }) {
         <UserAvatar src={video.avatarUrl} name={video.displayName || 'User'} size="lg" />
         <div>
           <h2>{video.displayName || '-'}</h2>
-          <span>{video.userId}</span>
           <small>Xem người dùng</small>
         </div>
       </Link>

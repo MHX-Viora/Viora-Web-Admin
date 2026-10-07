@@ -10,7 +10,6 @@ export function PostAuthorCard({ post }: { post: AdminPostDetail }) {
         <UserAvatar src={post.avatarUrl} name={post.displayName || 'User'} size="lg" />
         <div>
           <h2>{post.displayName || '-'}</h2>
-          <span>{post.userId}</span>
           <Link className="btn" to={`/admin/users/${post.userId}`}>Xem người dùng</Link>
         </div>
       </div>

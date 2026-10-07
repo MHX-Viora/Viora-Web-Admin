@@ -20,6 +20,7 @@ export type AdminPostMedia = {
 };
 
 export type AdminPostDetail = AdminPost & {
+  articleBlocks?: { id: string; orderIndex: number; type: number; content: string | null; mediaUrl: string | null; thumbnailUrl: string | null; caption: string | null }[];
   location?: string;
   visibility: number;
   saveCount: number;

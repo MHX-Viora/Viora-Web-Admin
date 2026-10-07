@@ -9,6 +9,7 @@ export const apiClient = axios.create({
 export function getErrorMessage(error: unknown) {
   if (axios.isAxiosError(error)) {
     const data = parseErrorData(error.response?.data);
+    if (data && typeof data === 'object' && 'error' in data && data.error && typeof data.error === 'object' && 'message' in data.error) return String(data.error.message);
     const message = typeof data === 'object' && data && 'message' in data ? String(data.message) : undefined;
     const traceId = typeof data === 'object' && data && 'traceId' in data ? String(data.traceId) : undefined;
     return [message ?? error.message, traceId ? `TraceId: ${traceId}` : undefined].filter(Boolean).join(' ');

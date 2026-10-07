@@ -2,6 +2,7 @@ import { apiClient, normalizePageResult, unwrapApiData } from './http';
 import type { AdminPost, AdminPostDetail, PostListParams } from '../types/admin-post';
 
 type ApiPost = Partial<AdminPost> & {
+  articleBlocks?: AdminPostDetail['articleBlocks'];
   location?: string;
   visibility?: number;
   saveCount?: number;
@@ -62,5 +63,6 @@ function mapPostDetail(post: ApiPost): AdminPostDetail {
     viewCount: post.viewCount ?? 0,
     media: post.media ?? [],
     hashtags: post.hashtags ?? [],
+    articleBlocks: post.articleBlocks ?? [],
   };
 }
