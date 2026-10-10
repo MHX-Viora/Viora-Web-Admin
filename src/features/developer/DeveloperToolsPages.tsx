@@ -7,12 +7,29 @@ import { developerApi } from '../../services/developer.service';
 import { getErrorMessage } from '../../services/http';
 import { useDeveloperApp, useDeveloperProfile } from './context';
 import { AuditTimeline, QueryState, SecretDisclosure } from './Shared';
+import { downloadVerificationFile } from './verification-download';
 
 export function DeveloperDomainsPage() {
   const app = useDeveloperApp(); const client = useQueryClient(); const [host, setHost] = useState('');
   const query = useQuery({ queryKey: ['developer-domains', app.id], queryFn: () => developerApi.domains(app.id) });
   const mutation = useMutation({ mutationFn: async (domainId?: string) => { if (domainId) await developerApi.verifyDomain(app.id, domainId); else await developerApi.addDomain(app.id, host.trim()); }, onSuccess: async () => { setHost(''); toast.success('Đã cập nhật domain'); await client.invalidateQueries({ queryKey: ['developer-domains', app.id] }); }, onError: e => toast.error(getErrorMessage(e)) });
-  return <div className="detail-card mini-stack"><h2>Xác minh quyền sở hữu domain</h2><p>Đặt nội dung challenge vào file công khai của domain tương ứng, sau đó yêu cầu ANKT xác minh. File không được chuyển hướng.</p><form className="mini-row" onSubmit={e => { e.preventDefault(); mutation.mutate(undefined); }}><label>Domain<input required placeholder="app.example.com" value={host} onChange={e => setHost(e.target.value)} pattern="[a-zA-Z0-9.-]+" /></label><button className="btn primary" disabled={mutation.isPending}>Thêm domain</button></form><QueryState query={query}>{!query.data?.length ? <Empty /> : query.data.map(domain => <article className="mini-version mini-stack" key={domain.id}><div className="mini-row"><strong>{domain.host}</strong><StatusBadge status={domain.verifiedAt ? 'approved' : 'pending'} /></div><label>Đường dẫn challenge<input readOnly value={`https://${domain.host}/.well-known/ankt-mini-app-verification.txt`} /></label><label>Nội dung file<textarea readOnly rows={2} value={domain.challengeToken} /></label>{domain.verifiedAt ? <p>Đã xác minh {new Date(domain.verifiedAt).toLocaleString('vi-VN')}</p> : <button className="btn" disabled={mutation.isPending} type="button" onClick={() => mutation.mutate(domain.id)}>Kiểm tra xác minh</button>}</article>)}</QueryState></div>;
+  async function download(token: string) {
+    try { await downloadVerificationFile(token); }
+    catch (error) { toast.error(getErrorMessage(error)); }
+  }
+  return <div className="detail-card mini-stack">
+    <h2>Xác minh quyền sở hữu domain</h2>
+    <ol><li>Tải file TXT chứa sẵn mã xác minh của domain bên dưới.</li><li>Đưa nguyên file vào thư mục gốc của website, giữ nguyên tên và nội dung. Không cần tạo thư mục con.</li><li>Bấm Kiểm tra xác minh. URL phải trả HTTP 200 qua HTTPS, không chuyển hướng hoặc yêu cầu đăng nhập.</li></ol>
+    <form className="mini-row" onSubmit={e => { e.preventDefault(); mutation.mutate(undefined); }}><label>Domain<input required placeholder="app.example.com" value={host} onChange={e => setHost(e.target.value)} pattern="[a-zA-Z0-9.-]+" /></label><button className="btn primary" disabled={mutation.isPending}>Thêm domain</button></form>
+    <QueryState query={query}>{!query.data?.length ? <Empty /> : query.data.map(domain => <article className="mini-version mini-stack" key={domain.id}>
+      <div className="mini-row"><strong>{domain.host}</strong><StatusBadge status={domain.verifiedAt ? 'approved' : 'pending'} /></div>
+      <label>URL file cần đặt trên website<input readOnly value={`https://${domain.host}/ankt-mini-app-verification.txt`} /></label>
+      <button className="btn primary" disabled={mutation.isPending} type="button" onClick={() => void download(domain.challengeToken)}>Tải file xác minh (.txt)</button>
+      <p>File <code>ankt-mini-app-verification.txt</code> đã chứa mã của domain này. Không cần tạo hoặc sửa file.</p>
+      <details><summary>Xem mã xác minh</summary><textarea aria-label={`Mã xác minh ${domain.host}`} readOnly rows={2} value={domain.challengeToken} /></details>
+      {domain.verifiedAt ? <p>Đã xác minh {new Date(domain.verifiedAt).toLocaleString('vi-VN')}</p> : <button className="btn" disabled={mutation.isPending} type="button" onClick={() => mutation.mutate(domain.id)}>Kiểm tra xác minh</button>}
+    </article>)}</QueryState>
+  </div>;
 }
 
 export function DeveloperSsoPage() {

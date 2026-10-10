@@ -54,7 +54,7 @@ export function AdminMiniAppReview({ app }: { app: HybridApp }) {
       {!review.hosts.length ? <p>Chưa có cấu hình gửi duyệt để đối chiếu domain. Developer hoàn tất bản nháp và gửi phiên bản trước.</p> : review.hosts.map(host => { const domain = context.data?.domains.find(item => item.host === host); return <div className="mini-version mini-stack" key={host}>
         <div className="mini-row"><strong>{host}</strong><span>{domain?.verifiedAt ? '✓ Đã xác minh' : 'Chưa xác minh'}</span></div>
         {domain?.verifiedAt ? <p>Xác minh gần nhất: {new Date(domain.verifiedAt).toLocaleString('vi-VN')}</p> : null}
-        <code className="truncate-url">{`https://${host}/.well-known/ankt-mini-app-verification.txt`}</code>
+        <code className="truncate-url">{`https://${host}/ankt-mini-app-verification.txt`}</code>
         {domain ? <button className="btn" type="button" disabled={busy} onClick={() => verify.mutate(domain.id)}>Kiểm tra lại domain {host}</button> : <p>Developer cần tạo mã và đặt file xác minh trên domain này.</p>}
       </div>; })}
       <p className="mini-muted">Kiểm tra lại dùng mã đã cấp và truy cập HTTPS công khai. Kết quả không khớp sẽ hủy bằng chứng cũ và chặn phát hành; mỗi domain cần chờ ít nhất 30 giây giữa hai lần kiểm tra.</p>
