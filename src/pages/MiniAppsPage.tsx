@@ -16,7 +16,7 @@ export function MiniAppsPage({ pendingOnly = false }: { pendingOnly?: boolean })
     { key: 'name', title: 'Mini App', render: (item) => <div><strong>{item.name}</strong><small className="table-subtitle">{item.slug}</small></div> },
     { key: 'developer', title: 'Developer', render: (item) => item.developer },
     { key: 'webUrl', title: 'Web URL', render: (item) => <span className="truncate-url">{item.webUrl}</span> },
-    { key: 'status', title: 'Trạng thái', render: (item) => <StatusBadge status={item.status} /> },
+    { key: 'status', title: 'Trạng thái', render: (item) => <div><StatusBadge status={item.status} />{item.pendingVersion ? <small className="table-subtitle">Chờ duyệt phiên bản {item.pendingVersion}</small> : null}</div> },
     { key: 'createdAt', title: 'Ngày tạo', render: (item) => new Date(item.createdAt).toLocaleDateString('vi-VN') },
   ];
   const logColumns: Column<MiniAppAudit>[] = [{ key: 'action', title: 'Sự kiện', render: (item) => <strong>{item.action}</strong> }, { key: 'app', title: 'Mini App ID', render: (item) => item.miniAppId || '—' }, { key: 'detail', title: 'Chi tiết', render: (item) => item.detail || '—' }, { key: 'created', title: 'Thời gian', render: (item) => new Date(item.createdAt).toLocaleString('vi-VN') }];

@@ -1,0 +1,8 @@
+# Admin Mini App review
+
+- /mini-apps/:id is now review-first: exact-owner profile, domain proof/recheck, immutable submitted configuration, explicit approve/reject and reviewer confirmations. Draft editing is collapsed and saving is clearly not verification/publication. Active pending updates show their version in queue.
+- src/features/mini-app-review/review.ts derives approval blockers from snapshot version, app/Developer status, required website/origin/callback hosts, permissions and category. Server remains authoritative. Rejection can proceed with invalid proof.
+- API context: GET /api/admin/mini-apps/{id}/review. Recheck: POST /api/admin/mini-apps/{id}/domains/{domainId}/verify. Decisions include exact {version, reason}; deploy with corresponding BE changes. Missing endpoint/error prevents approval. No new migration/dependency.
+- Legacy PendingReview with no snapshot: admin draft-save returns record to draft for Developer proof/submission; cannot directly approve. Restoration does not publish a pending update.
+- Validation: 21 focused admin tests, TypeScript/Vite build and ESLint passed. Chrome full admin app with synthetic local auth/API fixture exercised approve/version 2 without PUT, failed verification/blocked approval, draft/legacy/suspended states, queue pending updates and mobile layout. No production mutations or external domain check performed; backend integration tests cover those service paths with fake verifier.
+- No deployment. Admin changes committed at the user's request; corresponding BE changes require a separate commit/deployment. Full backend handoff: viora-BE/docs/handoffs/admin-mini-app-review.md.
