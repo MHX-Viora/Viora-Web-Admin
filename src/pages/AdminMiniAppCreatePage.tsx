@@ -1,0 +1,18 @@
+import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { PageHeader } from '../components/common';
+import { createAdminMiniApp, getDevelopers, getMiniAppCategories, getMiniAppPermissions } from '../services/admin-mini-app.service';
+import { getErrorMessage } from '../services/http';
+import { ConfigFields } from '../features/developer/ConfigFields';
+import { newConfig, validateConfig } from '../features/developer/config';
+import { QueryState, SecretDisclosure } from '../features/developer/Shared';
+
+export function AdminMiniAppCreatePage() {
+  const navigate = useNavigate(); const client = useQueryClient(); const [step, setStep] = useState(0); const [form, setForm] = useState(newConfig); const [developerId, setDeveloperId] = useState(''); const [search, setSearch] = useState(''); const [createdId, setCreatedId] = useState(''); const [secret, setSecret] = useState('');
+  const metadata = useQuery({ queryKey: ['admin-mini-app-create-metadata'], queryFn: async () => { const [categories, permissions] = await Promise.all([getMiniAppCategories(), getMiniAppPermissions()]); return { categories, permissions }; } });
+  const developers = useQuery({ queryKey: ['admin-mini-app-create-developers', search], queryFn: () => getDevelopers({ page: 1, pageSize: 100, search: search || undefined, status: 'Active' }) });
+  const create = useMutation({ mutationFn: () => createAdminMiniApp(developerId, form), onSuccess: async result => { setCreatedId(result.id); await client.invalidateQueries({ queryKey: ['mini-apps'] }); if (result.clientSecret && form.authenticationMode === 'AnktSso') setSecret(result.clientSecret); else navigate(`/mini-apps/${result.id}`); }, onError: e => toast.error(getErrorMessage(e)) });
+  return <section><PageHeader title="Tạo Mini App cho Developer" description="Tạo bản nháp ứng dụng. Developer xác minh domain và gửi phiên bản để xét duyệt." actions={<Link className="btn" to="/mini-apps">Quay lại</Link>} /><div className="detail-card mini-stack"><h2>Đơn vị sở hữu</h2><label>Tìm Developer<input value={search} onChange={e => setSearch(e.target.value)} /></label><QueryState query={developers}><label>Developer đã duyệt<select value={developerId} onChange={e => setDeveloperId(e.target.value)}><option value="">Chọn Developer</option>{developers.data?.items.map(item => <option key={item.id} value={item.id}>{item.name} · {item.email}</option>)}</select></label></QueryState><Link to="/developers">Tạo hoặc duyệt Developer</Link></div><QueryState query={metadata}><form className="detail-card mini-stack" onSubmit={e => { e.preventDefault(); if (!developerId) return toast.error('Chọn Developer sở hữu ứng dụng.'); const error = validateConfig(form, step === 4 ? undefined : step); if (error) return toast.error(error); if (step < 4) setStep(step + 1); else create.mutate(); }}><h2>Bước {step + 1}/5 · {['Thông tin', 'Website & domain', 'Đăng nhập', 'Quyền truy cập', 'Xem trước'][step]}</h2><ConfigFields value={form} onChange={setForm} section={step} categories={metadata.data?.categories} permissions={metadata.data?.permissions} /><div className="mini-row mini-end"><button className="btn" type="button" disabled={step === 0 || create.isPending} onClick={() => setStep(step - 1)}>Trước</button><button className="btn primary" disabled={create.isPending}>{step === 4 ? 'Tạo bản nháp' : 'Tiếp theo'}</button></div></form></QueryState>{secret ? <SecretDisclosure secret={secret} onDismiss={() => { setSecret(''); create.reset(); navigate(`/mini-apps/${createdId}`); }} /> : null}</section>;
+}

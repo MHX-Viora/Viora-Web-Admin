@@ -24,6 +24,12 @@ import { FinancePage } from './pages/FinancePage';
 import { WithdrawalDetailPage } from './pages/WithdrawalDetailPage';
 import { AdvertisementsPage } from './pages/AdvertisementsPage';
 import { isAuthenticated, setupAuthInterceptors, subscribeAuthChange } from './services/auth.service';
+import { DeveloperAppsPage, DeveloperLayout, DeveloperLoginPage, DeveloperOverviewPage, DeveloperProfilePage } from './features/developer/DeveloperPortal';
+import { CreateMiniAppPage } from './features/developer/CreateMiniAppPage';
+import { DeveloperAppDetailsPage, DeveloperAppLayout, DeveloperPermissionsPage } from './features/developer/DeveloperAppPage';
+import { DeveloperAnalyticsPage, DeveloperAuditPage, DeveloperDomainsPage, DeveloperSsoPage, DeveloperTeamPage } from './features/developer/DeveloperToolsPages';
+import { MiniAppAuditPage, MiniAppPolicyPage, MiniAppReportsPage } from './pages/MiniAppPolicyPage';
+import { AdminMiniAppCreatePage } from './pages/AdminMiniAppCreatePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,6 +79,22 @@ export default function App() {
       <AppErrorBoundary>
         <BrowserRouter>
           <Routes>
+            <Route path="developer/login" element={<DeveloperLoginPage />} />
+            <Route path="developer" element={<DeveloperLayout />}>
+              <Route index element={<DeveloperOverviewPage />} />
+              <Route path="profile" element={<DeveloperProfilePage />} />
+              <Route path="team" element={<DeveloperTeamPage />} />
+              <Route path="apps" element={<DeveloperAppsPage />} />
+              <Route path="apps/new" element={<CreateMiniAppPage />} />
+              <Route path="apps/:id" element={<DeveloperAppLayout />}>
+                <Route index element={<DeveloperAppDetailsPage />} />
+                <Route path="sso" element={<DeveloperSsoPage />} />
+                <Route path="domains" element={<DeveloperDomainsPage />} />
+                <Route path="permissions" element={<DeveloperPermissionsPage />} />
+                <Route path="analytics" element={<DeveloperAnalyticsPage />} />
+                <Route path="audit" element={<DeveloperAuditPage />} />
+              </Route>
+            </Route>
             <Route path="login" element={authenticated ? <Navigate to="/" replace /> : <LoginPage onLogin={() => setAuthenticated(true)} />} />
             <Route element={authenticated ? <AdminLayout onLogout={() => setAuthenticated(false)} /> : <Navigate to="/login" replace />}>
               <Route index element={<DashboardPage />} />
@@ -97,6 +119,11 @@ export default function App() {
               <Route path="admin-logs" element={<AdminLogsPage />} />
               <Route path="legal" element={<LegalDocumentsPage />} />
               <Route path="mini-apps" element={<MiniAppsPage />} />
+              <Route path="mini-apps/pending" element={<MiniAppsPage key="pending" pendingOnly />} />
+              <Route path="mini-apps/new" element={<AdminMiniAppCreatePage />} />
+              <Route path="mini-apps/policy" element={<MiniAppPolicyPage />} />
+              <Route path="mini-apps/reports" element={<MiniAppReportsPage />} />
+              <Route path="mini-apps/audit" element={<MiniAppAuditPage />} />
               <Route path="mini-apps/:id" element={<MiniAppDetailPage />} />
               <Route path="developers" element={<DevelopersPage />} />
               <Route path="stickers" element={<StickerPacksPage />} />

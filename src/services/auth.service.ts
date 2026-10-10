@@ -130,11 +130,20 @@ export async function login(payload: LoginPayload) {
 }
 
 export async function refreshAccessToken() {
+  const previousUser = getCurrentUser();
+  const previousToken = getAccessToken();
   refreshPromise ??= authClient
     .post<unknown>('/api/accounts/refresh-token')
     .then(({ data }) => {
       const result = unwrapApiData<RefreshTokenResponse>(parseApiData(data));
       if (!result.accessToken) throw new Error('Không nhận được access token mới');
+      const identity = readTokenIdentity(result.accessToken);
+      if (!identity || identity.role !== 2 || !previousUser || identity.accountId !== previousUser.accountId) {
+        throw new Error('Phiên quản trị đã thay đổi. Vui lòng đăng nhập lại.');
+      }
+      if (getCurrentUser()?.accountId !== previousUser.accountId || getAccessToken() !== previousToken) {
+        throw new Error('Phiên quản trị đã thay đổi. Vui lòng đăng nhập lại.');
+      }
       setAccessToken(result.accessToken);
       return result.accessToken;
     })
@@ -181,13 +190,14 @@ export function setupAuthInterceptors(client: AxiosInstance = apiClient) {
       }
 
       config._retry = true;
+      const failedSessionToken = getAccessToken();
 
       try {
         const token = await refreshAccessToken();
         setAuthorizationHeader(config, token);
         return client.request(config);
       } catch (refreshError) {
-        expireSession();
+        if (getAccessToken() === failedSessionToken) expireSession();
         return Promise.reject(refreshError);
       }
     },

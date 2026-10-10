@@ -1,6 +1,6 @@
-export type MiniAppStatus = 'Draft' | 'PendingReview' | 'Active' | 'Suspended' | 'Rejected' | 'Deleted';
+export type MiniAppStatus = 'Draft' | 'PendingReview' | 'Active' | 'Suspended' | 'Rejected' | 'Deleted' | 'Archived';
 export type DeveloperStatus = 'Pending' | 'Active' | 'Suspended' | 'Rejected';
-export type MiniAppPermission = { code: string; name: string; description?: string | null; isSensitive: boolean };
+export type MiniAppPermission = { code: string; name: string; description?: string | null; isSensitive: boolean; isActive?: boolean };
 export type MiniAppDashboard = { totalMiniApps: number; active: number; pendingReview: number; suspended: number; developers: number; successfulLaunches: number; failedLaunches: number };
 export type MiniAppListItem = { id: string; name: string; slug: string; developer: string; webUrl: string; status: MiniAppStatus; isFeatured: boolean; createdAt: string };
 export type AdminPage<T> = { items: T[]; total: number; page: number; pageSize: number };
@@ -8,3 +8,16 @@ export type MiniAppDetail = { id: string; name: string; slug: string; developer:
 export type Developer = { id: string; accountId?: string | null; name: string; companyName?: string | null; email: string; phone?: string | null; website?: string | null; status: DeveloperStatus; miniAppCount: number; createdAt: string; updatedAt: string };
 export type MiniAppAudit = { id: string; miniAppId?: string | null; developerId?: string | null; actorAccountId?: string | null; action: string; detail?: string | null; createdAt: string };
 export type MiniAppUpdate = Omit<MiniAppDetail, 'id' | 'developer' | 'clientId' | 'status' | 'createdAt' | 'updatedAt' | 'permissions'> & { permissions: string[] };
+
+export type AuthenticationMode = 'Independent' | 'AnktSso';
+export type MiniAppCategory = { id: string; name: string; slug: string; isActive?: boolean };
+export type HybridConfig = MiniAppUpdate & { categoryId?: string | null; authenticationMode: AuthenticationMode; callbackUrls: string[]; allowedOrigins: string[]; clientAuthenticationMethod: 'ClientSecretPost' | 'None'; version: number };
+export type HybridApp = MiniAppDetail & { categoryId?: string | null; authenticationMode?: AuthenticationMode; callbackUrls?: string[]; allowedOrigins?: string[]; clientAuthenticationMethod?: 'ClientSecretPost' | 'None'; developerId?: string; publishedVersion?: number; pendingVersion?: number | null; rejectionReason?: string | null; category?: string | null; developerProfile?: Developer };
+export type DeveloperProfile = Developer & { membershipRole?: string };
+export type DeveloperInput = { name: string; companyName?: string; email: string; phone?: string; website?: string; accountId?: string };
+export type CreatedMiniApp = { id: string; clientId: string; clientSecret?: string };
+export type VerifiedDomain = { id: string; host: string; verifiedAt?: string | null; challengeToken: string };
+export type TeamMember = { id: string; accountId: string; role: string; createdAt: string };
+export type AppVersion = { id: string; version: number; status: string; reason?: string | null; createdAt: string; reviewedAt?: string | null; configuration?: HybridConfig };
+export type AppAnalytics = { successfulLaunches: number; failedLaunches: number; uniqueUsers: number; daily: { date: string; launches: number; failures: number }[] };
+export type MiniAppReport = { id: string; miniAppId: string; appName: string; reason: string; createdAt: string; resolvedAt?: string | null; resolution?: string | null };
