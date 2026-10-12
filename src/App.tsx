@@ -19,6 +19,7 @@ import { LegalDocumentsPage } from './pages/LegalDocumentsPage';
 import { MiniAppsPage } from './pages/MiniAppsPage';
 import { MiniAppDetailPage } from './pages/MiniAppDetailPage';
 import { DevelopersPage } from './pages/DevelopersPage';
+import { DeveloperReviewPage } from './pages/DeveloperReviewPage';
 import { StickerPacksPage } from './pages/StickerPacksPage';
 import { FinancePage } from './pages/FinancePage';
 import { WithdrawalDetailPage } from './pages/WithdrawalDetailPage';
@@ -126,6 +127,7 @@ export default function App() {
               <Route path="mini-apps/audit" element={<MiniAppAuditPage />} />
               <Route path="mini-apps/:id" element={<MiniAppDetailPage />} />
               <Route path="developers" element={<DevelopersPage />} />
+              <Route path="developers/:id" element={<DeveloperReviewPage />} />
               <Route path="stickers" element={<StickerPacksPage />} />
               <Route path="finance" element={<FinancePage />} />
               <Route path="finance/withdrawals/:id" element={<WithdrawalDetailPage />} />

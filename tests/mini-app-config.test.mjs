@@ -17,6 +17,12 @@ test('Independent mode allows an empty callback and rejects identity permission'
   assert.equal(validateConfig(config), null);
   assert.match(validateConfig({ ...config, permissions: ['identity.login'] }), /SSO/);
 });
+test('Auto Login defaults off and cannot be enabled for an Independent app', () => {
+ const { validateConfig, newConfig } = load();
+ const config = { ...newConfig(), name: 'Shop', slug: 'shop', webUrl: 'https://shop.example', allowedDomains: ['shop.example'] };
+ assert.equal(config.autoLogin, false);
+ assert.match(validateConfig({ ...config, autoLogin: true }), /Auto Login/);
+});
 test('SSO requires exact HTTPS callback and an origin without paths', () => {
   const { validateConfig, newConfig } = load();
   const config = { ...newConfig(), name: 'Shop', slug: 'shop', webUrl: 'https://shop.example', allowedDomains: ['shop.example'], permissions: ['identity.login'], authenticationMode: 'AnktSso', callbackUrls: ['https://shop.example/auth'], callbackUrl: 'https://shop.example/auth', allowedOrigins: ['https://shop.example'] };

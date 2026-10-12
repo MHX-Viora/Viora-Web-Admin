@@ -13,6 +13,8 @@
 .developer-login h1 { font-size: 26px; }
 .developer-login a { display: block; margin-top: 20px; }
 .mini-stack { display: grid; gap: 20px; }
+.platform-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.platform-terms { white-space: pre-wrap; }
 .mini-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 20px; }
 .mini-full { grid-column: 1 / -1; }
 .mini-stack label, .mini-form-grid label { display: grid; gap: 8px; }

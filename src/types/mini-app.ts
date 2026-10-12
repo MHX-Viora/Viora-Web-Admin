@@ -1,5 +1,5 @@
 export type MiniAppStatus = 'Draft' | 'PendingReview' | 'Active' | 'Suspended' | 'Rejected' | 'Deleted' | 'Archived';
-export type DeveloperStatus = 'Pending' | 'Active' | 'Suspended' | 'Rejected';
+export type DeveloperStatus = 'Pending' | 'Active' | 'Suspended' | 'Rejected' | 'Draft' | 'PendingReview' | 'NeedMoreInformation' | 'Approved' | 'Revoked';
 export type MiniAppPermission = { code: string; name: string; description?: string | null; isSensitive: boolean; isActive?: boolean };
 export type MiniAppDashboard = { totalMiniApps: number; active: number; pendingReview: number; suspended: number; developers: number; successfulLaunches: number; failedLaunches: number };
 export type MiniAppListItem = { id: string; name: string; slug: string; developer: string; webUrl: string; status: MiniAppStatus; isFeatured: boolean; createdAt: string; pendingVersion?: number | null };
@@ -11,14 +11,14 @@ export type MiniAppUpdate = Omit<MiniAppDetail, 'id' | 'developer' | 'clientId' 
 
 export type AuthenticationMode = 'Independent' | 'AnktSso';
 export type MiniAppCategory = { id: string; name: string; slug: string; isActive?: boolean };
-export type HybridConfig = MiniAppUpdate & { categoryId?: string | null; authenticationMode: AuthenticationMode; callbackUrls: string[]; allowedOrigins: string[]; clientAuthenticationMethod: 'ClientSecretPost' | 'None'; version: number };
-export type HybridApp = MiniAppDetail & { categoryId?: string | null; authenticationMode?: AuthenticationMode; callbackUrls?: string[]; allowedOrigins?: string[]; clientAuthenticationMethod?: 'ClientSecretPost' | 'None'; developerId?: string; publishedVersion?: number; pendingVersion?: number | null; rejectionReason?: string | null; category?: string | null; developerProfile?: Developer };
-export type DeveloperProfile = Developer & { membershipRole?: string };
-export type DeveloperInput = { name: string; companyName?: string; email: string; phone?: string; website?: string; accountId?: string };
+export type HybridConfig = MiniAppUpdate & import('./developer-platform').PlatformAppMetadata & { categoryId?: string | null; authenticationMode: AuthenticationMode; callbackUrls: string[]; allowedOrigins: string[]; clientAuthenticationMethod: 'ClientSecretPost' | 'None'; version: number };
+export type HybridApp = MiniAppDetail & import('./developer-platform').PlatformAppMetadata & { approvedVersion?: number | null; reviewState?: string; publicationStatus?: string; categoryId?: string | null; authenticationMode?: AuthenticationMode; callbackUrls?: string[]; allowedOrigins?: string[]; clientAuthenticationMethod?: 'ClientSecretPost' | 'None'; developerId?: string; publishedVersion?: number; pendingVersion?: number | null; rejectionReason?: string | null; category?: string | null; developerProfile?: Developer };
+export type DeveloperProfile = Developer & import('./developer-platform').DeveloperRegistration & { membershipRole?: string };
+export type DeveloperInput = import('./developer-platform').DeveloperApplicationFields & { name: string; companyName?: string; email: string; phone?: string; website?: string; accountId?: string; version?: number };
 export type CreatedMiniApp = { id: string; clientId: string; clientSecret?: string };
 export type VerifiedDomain = { id: string; host: string; verifiedAt?: string | null; challengeToken: string };
 export type AdminReviewContext = { developer: Developer; domains: Omit<VerifiedDomain, 'challengeToken'>[] };
 export type TeamMember = { id: string; accountId: string; role: string; createdAt: string };
-export type AppVersion = { id: string; version: number; status: string; reason?: string | null; createdAt: string; reviewedAt?: string | null; configuration?: HybridConfig };
+export type AppVersion = { reviewState?: string; testedAt?: string; configurationHash?: string; technicalTest?: import('./developer-platform').TechnicalTest; id: string; version: number; status: string; reason?: string | null; createdAt: string; reviewedAt?: string | null; configuration?: HybridConfig };
 export type AppAnalytics = { successfulLaunches: number; failedLaunches: number; uniqueUsers: number; daily: { date: string; launches: number; failures: number }[] };
 export type MiniAppReport = { id: string; miniAppId: string; appName: string; reason: string; createdAt: string; resolvedAt?: string | null; resolution?: string | null };

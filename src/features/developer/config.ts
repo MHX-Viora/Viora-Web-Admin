@@ -2,12 +2,13 @@ import type { HybridApp, HybridConfig } from '../../types/mini-app';
 
 export const lines = (value: string) => [...new Set(value.split(/[\n,]/).map(item => item.trim()).filter(Boolean))];
 export function newConfig(app?: HybridApp): HybridConfig {
-  return { name: app?.name ?? '', slug: app?.slug ?? '', description: app?.description ?? '', iconUrl: app?.iconUrl ?? '', coverUrl: app?.coverUrl ?? '', webUrl: app?.webUrl ?? '', callbackUrl: app?.callbackUrl ?? '', allowedDomains: app?.allowedDomains ?? [], permissions: app?.permissions.map(item => item.code) ?? [], isFeatured: app?.isFeatured ?? false, categoryId: app?.categoryId ?? null, authenticationMode: app?.authenticationMode ?? (app ? 'AnktSso' : 'Independent'), callbackUrls: app?.callbackUrls ?? (app?.callbackUrl ? [app.callbackUrl] : []), allowedOrigins: app?.allowedOrigins ?? [], clientAuthenticationMethod: app?.clientAuthenticationMethod ?? 'ClientSecretPost', version: app?.pendingVersion ?? ((app?.publishedVersion ?? 0) + 1) };
+  return { autoLogin: app?.autoLogin ?? false, integrationType: app?.integrationType ?? 'Website', ssoMode: app?.ssoMode ?? 'Disabled', supportEmail: app?.supportEmail ?? '', privacyPolicyUrl: app?.privacyPolicyUrl ?? '', termsUrl: app?.termsUrl ?? '', developmentUrl: app?.developmentUrl ?? '', ageRating: app?.ageRating ?? 'Everyone', releaseRegions: app?.releaseRegions ?? [], name: app?.name ?? '', slug: app?.slug ?? '', description: app?.description ?? '', iconUrl: app?.iconUrl ?? '', coverUrl: app?.coverUrl ?? '', webUrl: app?.webUrl ?? '', callbackUrl: app?.callbackUrl ?? '', allowedDomains: app?.allowedDomains ?? [], permissions: app?.permissions.map(item => item.code) ?? [], isFeatured: app?.isFeatured ?? false, categoryId: app?.categoryId ?? null, authenticationMode: app?.authenticationMode ?? (app ? 'AnktSso' : 'Independent'), callbackUrls: app?.callbackUrls ?? (app?.callbackUrl ? [app.callbackUrl] : []), allowedOrigins: app?.allowedOrigins ?? [], clientAuthenticationMethod: app?.clientAuthenticationMethod ?? 'ClientSecretPost', version: app?.pendingVersion ?? ((app?.publishedVersion ?? 0) + 1) };
 }
 function https(value: string) {
   try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password && !url.hash && !/^(localhost|127\.|10\.|192\.168\.|169\.254\.|\[|0\.)/i.test(url.hostname) && !/^172\.(1[6-9]|2\d|3[01])\./.test(url.hostname); } catch { return false; }
 }
 export function validateConfig(config: HybridConfig, step?: number): string | null {
+  if (config.autoLogin && (config.authenticationMode !== 'AnktSso' || config.ssoMode === 'Disabled')) return 'Auto Login yêu cầu bật ANKT SSO.';
   if ((step === undefined || step === 0) && (!config.name.trim() || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(config.slug))) return 'Nhập tên và slug gồm chữ thường, số hoặc dấu gạch ngang.';
   if (step === undefined || step === 1) {
     if (!https(config.webUrl)) return 'Website phải là URL HTTPS công khai.';
