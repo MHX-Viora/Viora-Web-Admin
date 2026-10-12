@@ -52,6 +52,7 @@ const menuGroups: MenuGroup[] = [
     items: [
       { to: '/mini-apps', label: 'Mini Apps', icon: AppWindow },
       { to: '/developers', label: 'Developers', icon: Code2 },
+      { to: '/mini-apps/editorial', label: 'Nội dung Mini App', icon: Code2 },
     ],
   },
   {

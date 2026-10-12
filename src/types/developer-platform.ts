@@ -1,5 +1,5 @@
 export type PartnerType = 'Individual' | 'Business' | 'Organization';
-export type PlatformAppMetadata = { integrationType?: 'Website' | 'Sso' | 'Sdk'; autoLogin?: boolean; ssoMode?: 'Disabled' | 'Optional' | 'Required'; supportEmail?: string; privacyPolicyUrl?: string; termsUrl?: string; developmentUrl?: string; ageRating?: string; releaseRegions?: string[] };
+export type PlatformAppMetadata = { screenshots?: string[]; integrationType?: 'Website' | 'Sso' | 'Sdk'; autoLogin?: boolean; ssoMode?: 'Disabled' | 'Optional' | 'Required'; supportEmail?: string; privacyPolicyUrl?: string; termsUrl?: string; developmentUrl?: string; ageRating?: string; releaseRegions?: string[] };
 export type TechnicalTest = { requestId: string; checkedAt: string; configurationHash: string; passed: boolean; mode: 'Limited'; checks: { code: string; passed: boolean; message: string; httpStatus?: number; durationMs?: number }[] };
 export type RegistrationStatus = 'Draft' | 'PendingReview' | 'NeedMoreInformation' | 'Approved' | 'Rejected' | 'Suspended' | 'Revoked';
 export interface DeveloperReviewEvent { id: string; reviewerId: string; previousStatus: string; status: string; reason?: string | null; internalNotes?: string | null; createdAt: string; version: number }
