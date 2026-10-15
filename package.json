@@ -1,6 +1,9 @@
 {
   "name": "ankt-admin",
   "private": true,
+  "overrides": {
+    "@grpc/grpc-js": "^1.13.6"
+  },
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -12,6 +15,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.101.4",
     "axios": "^1.18.1",
+    "firebase": "^12.19.0",
     "lucide-react": "^1.25.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

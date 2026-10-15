@@ -5,6 +5,9 @@ export interface OpenApiIntegration {
   enabled: boolean;
   issuer: string | null;
   discoveryUrl: string | null;
+  authorizationEndpoint?: string | null;
+  tokenEndpoint?: string | null;
+  jwksEndpoint?: string | null;
   hostOrigin: string | null;
   clientId: string;
   approvedScopes: string[];

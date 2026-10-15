@@ -1,3 +1,9 @@
+import { DeveloperDocumentationPage } from './features/developer/DeveloperDocumentationPage';
+import { DeveloperWelcomePage, DeveloperSignInPage, DeveloperSignUpPage, DeveloperForgotPasswordPage, DeveloperVerifyEmailPage } from './features/developer/DeveloperAuthPages';
+import { DeveloperLayout, DeveloperOverviewPage, DeveloperAppsPage, DeveloperProfilePage } from './features/developer/DeveloperPortal';
+import { DeveloperAppLayout, DeveloperAppDetailsPage, DeveloperReleasesPage, DeveloperSettingsPage, DeveloperPermissionsPage } from './features/developer/DeveloperAppPage';
+import { DeveloperAppMembersPage, DeveloperConnectionPage, DeveloperDomainsPage, DeveloperSsoPage, DeveloperAnalyticsPage, DeveloperAuditPage, DeveloperTeamPage } from './features/developer/DeveloperToolsPages';
+import { CreateMiniAppPage } from './features/developer/CreateMiniAppPage';
 import { Component, useEffect, useState, type ErrorInfo, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
@@ -77,6 +83,24 @@ export default function App() {
       <AppErrorBoundary>
         <BrowserRouter>
           <Routes>
+            <Route path="developer/docs" element={<DeveloperDocumentationPage />} /><Route path="developer/docs/:documentId" element={<DeveloperDocumentationPage />} />
+            <Route path="developer/welcome" element={<DeveloperWelcomePage />} />
+            <Route path="developer/login" element={<DeveloperSignInPage />} />
+            <Route path="developer/signup" element={<DeveloperSignUpPage />} />
+            <Route path="developer/verify-email" element={<DeveloperVerifyEmailPage />} />
+            <Route path="developer/forgot-password" element={<DeveloperForgotPasswordPage />} />
+            <Route path="developer" element={<DeveloperLayout />}>
+              <Route index element={<DeveloperOverviewPage />} /><Route path="profile" element={<DeveloperProfilePage />} />
+              <Route path="apps" element={<DeveloperAppsPage />} /><Route path="apps/new" element={<CreateMiniAppPage />} />
+              <Route path="team" element={<DeveloperTeamPage />} />
+              <Route path="apps/:id" element={<DeveloperAppLayout />}>
+                <Route index element={<DeveloperAppDetailsPage />} /><Route path="connection" element={<DeveloperConnectionPage />} />
+                <Route path="domains" element={<DeveloperDomainsPage />} /><Route path="sso" element={<DeveloperSsoPage />} />
+                <Route path="members" element={<DeveloperAppMembersPage />} /><Route path="releases" element={<DeveloperReleasesPage />} />
+                <Route path="analytics" element={<DeveloperAnalyticsPage />} /><Route path="settings" element={<DeveloperSettingsPage />} />
+                <Route path="audit" element={<DeveloperAuditPage />} /><Route path="permissions" element={<DeveloperPermissionsPage />} />
+              </Route>
+            </Route>
             <Route path="login" element={authenticated ? <Navigate to="/" replace /> : <LoginPage onLogin={() => setAuthenticated(true)} />} />
             <Route element={authenticated ? <AdminLayout onLogout={() => setAuthenticated(false)} /> : <Navigate to="/login" replace />}>
               <Route index element={<DashboardPage />} />

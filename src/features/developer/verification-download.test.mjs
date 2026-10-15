@@ -22,5 +22,10 @@ for (const path of ['./verification-download.ts']) {
     assert.equal(blob.type, 'text/plain;charset=utf-8');
     assert.ok(clicked && removed); timers.forEach(fn=>fn()); assert.equal(revoked,'blob:test');
     await assert.rejects(save('')); await assert.rejects(save('bad\ncontent'));
+    const randomName = `ankt-verify-${'a'.repeat(32)}.txt`;
+    await save('safe_token', randomName, 'ankt-domain-verification=safe_token');
+    assert.equal(anchor.download, randomName);
+    assert.equal(await blob.text(), 'ankt-domain-verification=safe_token');
+    await assert.rejects(save('safe_token', '../escape.txt'));
   });
 }

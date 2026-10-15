@@ -13,6 +13,7 @@ function compile(file) {
   const module = new Module(file);
   module.paths = Module._nodeModulePaths(path.dirname(file));
   module.require = name => {
+    if (name === '../../services/developer-auth.service') return { developerClient: {} };
     if (name === '../../services/http') return { getErrorMessage: error => error instanceof Error ? error.message : 'Lỗi tải dữ liệu' };
     if (name.startsWith('.')) {
       const base = path.resolve(path.dirname(file), name);

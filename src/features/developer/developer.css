@@ -60,3 +60,22 @@
 .mini-skip:focus { top: 8px; }
 @media (max-width: 900px) { .developer-workspace { grid-template-columns: 1fr; } .developer-nav { flex-direction: row; flex-wrap: wrap; padding-bottom: 0; } .developer-main { padding: 24px 16px; } .developer-header { padding: 16px; } }
 @media (max-width: 600px) { .developer-apps, .mini-form-grid { grid-template-columns: 1fr; } .mini-steps { flex-wrap: wrap; } .mini-steps li { flex: 1 0 40%; } .mini-definition { grid-template-columns: 1fr; gap: 4px; } .mini-definition dd { margin-bottom: 12px; } .developer-header { flex-wrap: wrap; } .developer-nav a { padding: 8px; font-size: 13px; } }
+
+.developer-shell, .developer-login { --primary: #087f8c; --primary-soft: #e0f3f3; }
+.developer-nav { position: sticky; top: 0; align-self: start; }
+.developer-app-card .mini-definition { margin: 20px 0; font-size: 13px; grid-template-columns: 90px minmax(0,1fr); gap: 8px; }
+.developer-app-cover { width: 100%; max-height: 240px; border-radius: var(--radius-md); object-fit: cover; }
+.mini-copy-value { display: grid; gap: 8px; padding: 16px; background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.mini-copy-value code { overflow-wrap: anywhere; white-space: pre-wrap; }
+.mini-copy-value button { justify-self: start; min-height: 44px; }
+.mini-tabs { flex-wrap: nowrap; overflow-x: auto; }
+.mini-tabs a { white-space: nowrap; min-height: 44px; }
+.developer-shell .btn { min-height: 44px; }
+.developer-shell input, .developer-shell select, .developer-shell textarea { min-height: 44px; }
+.developer-shell button:focus-visible, .developer-shell a:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+@media (max-width: 900px) { .developer-nav { position: static; flex-wrap: nowrap; overflow-x: auto; } .developer-nav a { white-space: nowrap; } }
+@media (prefers-reduced-motion: reduce) { .developer-shell * { animation: none !important; transition: none !important; } }
+
+.mini-image-upload img { width: 96px; height: 96px; object-fit: cover; border-radius: var(--radius-sm); }
+
+.developer-docs { max-width: 1000px; margin: auto; padding: 32px 20px; }

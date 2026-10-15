@@ -1,7 +1,7 @@
 export type PartnerType = 'Individual' | 'Business' | 'Organization';
 export type PlatformAppMetadata = { screenshots?: string[]; integrationType?: 'Website' | 'Sso' | 'Sdk'; autoLogin?: boolean; ssoMode?: 'Disabled' | 'Optional' | 'Required'; supportEmail?: string; privacyPolicyUrl?: string; termsUrl?: string; developmentUrl?: string; ageRating?: string; releaseRegions?: string[] };
 export type TechnicalTest = { requestId: string; checkedAt: string; configurationHash: string; passed: boolean; mode: 'Limited'; checks: { code: string; passed: boolean; message: string; httpStatus?: number; durationMs?: number }[] };
-export type RegistrationStatus = 'Draft' | 'PendingReview' | 'NeedMoreInformation' | 'Approved' | 'Rejected' | 'Suspended' | 'Revoked';
+export type RegistrationStatus = 'Legacy' | 'Draft' | 'PendingReview' | 'NeedMoreInformation' | 'Approved' | 'Rejected' | 'Suspended' | 'Revoked';
 export interface DeveloperReviewEvent { id: string; reviewerId: string; previousStatus: string; status: string; reason?: string | null; internalNotes?: string | null; createdAt: string; version: number }
 export interface DeveloperApplicationFields { partnerType?: PartnerType; legalName?: string | null; tradingName?: string | null; businessRegistrationNumber?: string | null; country?: string | null; address?: string | null; representativeName?: string | null }
 export interface DeveloperRegistration extends DeveloperApplicationFields { registrationStatus?: RegistrationStatus; registrationVersion?: number; submittedAt?: string | null; publicReason?: string | null; contactEmailVerified?: boolean; termsAcceptedVersion?: string | null; termsAcceptedAt?: string | null; reviewHistory?: DeveloperReviewEvent[] }

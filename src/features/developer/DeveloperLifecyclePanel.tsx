@@ -10,7 +10,7 @@ import { QueryState } from './Shared';
 
 export function DeveloperLifecyclePanel({ app }: { app: HybridApp }) {
   const client = useQueryClient(); const profile = useDeveloperProfile(); const [action, setAction] = useState<'publish' | 'unpublish'>();
-  const editable = ['Owner', 'Admin', 'Developer', 'Member'].includes(profile.membershipRole ?? "");
+  const editable = ['Owner', 'Admin', 'Developer', 'Member'].includes(app.membershipRole ?? profile.membershipRole ?? "");
   const query = useQuery({ queryKey: ['developer-technical-test', app.id], queryFn: () => developerApi.technicalTest(app.id) });
   const test = useMutation({ mutationFn: () => developerApi.runTechnicalTest(app.id), onSuccess: result => { client.setQueryData(['developer-technical-test', app.id], result); }, onError: e => toast.error(getErrorMessage(e)) });
   const publish = useMutation({ mutationFn: async () => { if (action === 'publish') await developerApi.publish(app.id, app.approvedVersion!); else await developerApi.unpublish(app.id); }, onSuccess: async () => { setAction(undefined); toast.success('Đã cập nhật trạng thái phát hành'); await Promise.all([client.invalidateQueries({ queryKey: ['developer-app', app.id] }), client.invalidateQueries({ queryKey: ['developer-apps'] })]); }, onError: e => toast.error(getErrorMessage(e)) });

@@ -3,9 +3,10 @@ import { unwrapApiData } from './http';
 import type { LoginPayload } from './auth.service';
 
 const SESSION_KEY = 'ankt_developer_session';
-type Session = { token: string; accountId: string; displayName: string };
+type Session = { token: string; accountId: string; displayName: string; provider?: 'password' | 'google' };
 export const developerClient = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL?.trim() ?? '', withCredentials: true });
 let refreshing: Promise<string> | null = null;
+const isAccountAuthRequest = (url?: string) => url?.startsWith('/api/accounts/') || url?.startsWith('/api/auth/');
 function identity(token: string, allowExpired = false) {
   const part = token.split('.')[1];
   if (!part) throw new Error('Phiên đăng nhập không hợp lệ.');
@@ -18,20 +19,55 @@ export function getDeveloperSession(): Session | null {
 }
 export async function developerLogin(input: LoginPayload) {
   const { data } = await developerClient.post('/api/accounts/login', { identifier: input.identifier.trim(), password: input.password });
+  saveDeveloperLogin(data, 'password');
+}
+function saveDeveloperLogin(data: unknown, provider: 'password' | 'google') {
   const result = unwrapApiData<{ status: number; accessToken: string; user?: { displayName: string } }>(typeof data === 'string' ? JSON.parse(data) : data);
   if (result.status !== 1 || !result.accessToken) throw new Error('Không thể đăng nhập tài khoản ANKT.');
   const account = identity(result.accessToken);
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ token: result.accessToken, accountId: account.sub, displayName: result.user?.displayName ?? 'Developer' }));
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ token: result.accessToken, accountId: account.sub, displayName: result.user?.displayName ?? 'Developer', provider }));
+}
+export async function developerRegister(input: LoginPayload) {
+  await developerClient.post('/api/accounts/register', { identifier: input.identifier.trim(), password: input.password });
+  await developerLogin(input);
+}
+export async function developerGoogleLogin() {
+  const { developerGoogleToken } = await import('./developer-provider.service');
+  const { data } = await developerClient.post('/api/accounts/developer-google-login', { firebaseToken: await developerGoogleToken() });
+  saveDeveloperLogin(data, 'google');
+}
+export async function developerReauthenticate(operation: string, miniAppId?: string, password?: string) {
+  const session = getDeveloperSession();
+  if (!session) throw new Error('Vui lòng đăng nhập lại.');
+  const input = session.provider === 'google'
+    ? { operation, miniAppId, firebaseToken: await (await import('./developer-provider.service')).developerGoogleToken() }
+    : { operation, miniAppId, password };
+  const result = unwrapApiData<{ proof: string; expiresAt: string }>((await developerClient.post('/api/developer/reauth', input)).data);
+  return result.proof;
+}
+export async function developerResetWithGoogle(identifier: string, newPassword: string) {
+  const firebaseToken = await (await import('./developer-provider.service')).developerGoogleToken();
+  return unwrapApiData<{ message: string }>((await developerClient.post('/api/auth/reset-password', { identifier: identifier.trim(), newPassword, firebaseToken })).data);
+}
+export async function developerResetWithEmailLink(identifier: string, newPassword: string) {
+  const firebaseToken = await (await import('./developer-provider.service')).developerEmailLinkToken(identifier);
+  return unwrapApiData<{ message: string }>((await developerClient.post('/api/auth/reset-password', { identifier: identifier.trim(), newPassword, firebaseToken })).data);
+}
+export const developerAccountVerification = async () => unwrapApiData<{ email: string | null; emailVerifiedAt: string | null }>((await developerClient.get('/api/developer/account/verification')).data);
+export async function developerVerifyAccountEmail(email: string, google = false) {
+  const provider = await import('./developer-provider.service');
+  const firebaseToken = google ? await provider.developerGoogleToken() : await provider.developerEmailLinkToken(email);
+  return unwrapApiData<{ email: string; emailVerifiedAt: string }>((await developerClient.post('/api/developer/account/verify-email', { firebaseToken })).data);
 }
 export function developerLogout() { sessionStorage.removeItem(SESSION_KEY); }
 developerClient.interceptors.request.use(config => {
   const session = getDeveloperSession();
-  if (session && !config.url?.startsWith('/api/accounts/')) config.headers.set('Authorization', `Bearer ${session.token}`);
+  if (session && !isAccountAuthRequest(config.url)) config.headers.set('Authorization', `Bearer ${session.token}`);
   return config;
 });
 developerClient.interceptors.response.use(response => response, async error => {
   const config = error.config;
-  if (error.response?.status !== 401 || !config || config._developerRetry || config.url?.startsWith('/api/accounts/')) return Promise.reject(error);
+  if (error.response?.status !== 401 || !config || config._developerRetry || isAccountAuthRequest(config.url)) return Promise.reject(error);
   // Bind refresh to this principal: admin and portal share the server cookie, never their bearer session.
   const raw = sessionStorage.getItem(SESSION_KEY);
   const previous = raw ? JSON.parse(raw) as Session : null;

@@ -9,7 +9,7 @@ import { getErrorMessage } from '../../services/http';
 import type { HybridApp } from '../../types/mini-app';
 import { ConfigFields } from '../developer/ConfigFields';
 import { newConfig, validateConfig } from '../developer/config';
-import { AuditTimeline, QueryState, VersionHistory } from '../developer/Shared';
+import { AuditTimeline, CopyValue, QueryState, VersionHistory } from '../developer/Shared';
 import { reviewReadiness } from './review';
 import { OpenApiIntegrationPanel } from '../developer/OpenApiIntegrationPanel';
 
@@ -40,6 +40,7 @@ export function AdminMiniAppReview({ app }: { app: HybridApp }) {
   const website = review.configuration?.webUrl ?? app.webUrl;
   return <section>
     <PageHeader eyebrow="Kiểm duyệt Mini App" title={app.name} description="Xác minh thông tin và duyệt phiên bản đã gửi. Lưu bản nháp không phải là phê duyệt." actions={<><Link className="btn" to="/mini-apps/pending">Danh sách chờ duyệt</Link><StatusBadge status={app.status} /></>} />
+    <article className="detail-card mini-stack"><div className="mini-app-identity">{app.iconUrl && <img src={app.iconUrl} alt={`Logo ${app.name}`} />}<div><h2>{app.name}</h2><p>{app.category || app.slug}</p></div></div><CopyValue label="App ID" value={app.id} /><CopyValue label="Client ID" value={app.clientId} /><dl className="mini-definition"><dt>Đăng nhập</dt><dd>{app.authenticationMode === 'AnktSso' ? 'ANKT SSO' : 'Website độc lập'}</dd><dt>OAuth client</dt><dd>{app.clientAuthenticationMethod === 'None' ? 'Public client · PKCE S256' : 'Backend client · secret + PKCE S256'}</dd><dt>Xét duyệt</dt><dd><StatusBadge status={app.reviewState || app.status} /></dd><dt>Phát hành</dt><dd><StatusBadge status={app.publicationStatus || 'Unpublished'} /></dd></dl><p className="mini-muted">Quản trị viên không thể xem Client Secret. Quyết định xét duyệt và phát hành được ghi nhận riêng.</p></article>
     <div className="detail-card mini-stack">
       <h2>{review.version ? `Đang kiểm duyệt phiên bản ${review.version.version}` : 'Ứng dụng chưa có phiên bản gửi duyệt hợp lệ'}</h2>
       <p>Đã phát hành: {app.publishedVersion || 'Chưa có'}{app.pendingVersion ? ` · Phiên bản chờ duyệt: ${app.pendingVersion}` : ''}</p>
@@ -55,7 +56,9 @@ export function AdminMiniAppReview({ app }: { app: HybridApp }) {
       {!review.hosts.length ? <p>Chưa có cấu hình gửi duyệt để đối chiếu domain. Developer hoàn tất bản nháp và gửi phiên bản trước.</p> : review.hosts.map(host => { const domain = context.data?.domains.find(item => item.host === host); return <div className="mini-version mini-stack" key={host}>
         <div className="mini-row"><strong>{host}</strong><span>{domain?.verifiedAt ? '✓ Đã xác minh' : 'Chưa xác minh'}</span></div>
         {domain?.verifiedAt ? <p>Xác minh gần nhất: {new Date(domain.verifiedAt).toLocaleString('vi-VN')}</p> : null}
-        <code className="truncate-url">{`https://${host}/ankt-mini-app-verification.txt`}</code>
+        <CopyValue label="URL xác minh" value={domain?.verificationUrl || `https://${host}/${domain?.verificationFileName || 'ankt-mini-app-verification.txt'}`} />
+        {domain?.lastError && <p role="alert">{domain.lastError}</p>}
+        {domain?.lastCheckedAt && <small>Kiểm tra gần nhất: {new Date(domain.lastCheckedAt).toLocaleString('vi-VN')}</small>}
         {domain ? <button className="btn" type="button" disabled={busy} onClick={() => verify.mutate(domain.id)}>Kiểm tra lại domain {host}</button> : <p>Developer cần tạo mã và đặt file xác minh trên domain này.</p>}
       </div>; })}
       <p className="mini-muted">Kiểm tra lại dùng mã đã cấp và truy cập HTTPS công khai. Kết quả không khớp sẽ hủy bằng chứng cũ và chặn phát hành; mỗi domain cần chờ ít nhất 30 giây giữa hai lần kiểm tra.</p>

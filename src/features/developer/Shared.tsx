@@ -20,5 +20,10 @@ export function VersionHistory({ items }: { items: AppVersion[] }) {
 }
 export function SecretDisclosure({ secret, onDismiss }: { secret: string; onDismiss: () => void }) {
   const [visible, setVisible] = useState(false);
-  return <ConfirmDialog title="Lưu client secret" description="Secret chỉ hiển thị trong lần này. Lưu vào kho bí mật của máy chủ đối tác trước khi đóng." confirmText="Đã lưu, đóng" onCancel={onDismiss} onConfirm={onDismiss}><div className="mini-stack"><label>Client secret<input readOnly type={visible ? 'text' : 'password'} value={secret} autoComplete="off" /></label><div className="mini-row"><button className="btn" type="button" onClick={() => setVisible(!visible)}>{visible ? 'Ẩn' : 'Hiện'}</button><button className="btn" type="button" onClick={() => void navigator.clipboard.writeText(secret).then(() => toast.success('Đã sao chép')).catch(() => toast.error('Không thể sao chép; hãy lưu secret thủ công.'))}>Sao chép</button></div></div></ConfirmDialog>;
+  return <ConfirmDialog title="Lưu client secret" description="Secret chỉ hiển thị trong lần này. Lưu vào kho bí mật của máy chủ đối tác trước khi đóng." confirmText="Đã lưu, đóng" onCancel={onDismiss} onConfirm={onDismiss}><div className="mini-stack"><label>Client secret<input readOnly type={visible ? 'text' : 'password'} value={secret} autoComplete="off" /></label><div className="mini-row"><button className="btn" type="button" onClick={() => setVisible(!visible)}>{visible ? 'Ẩn' : 'Hiện'}</button><button className="btn" type="button" onClick={() => void navigator.clipboard.writeText(secret).then(() => toast.success('Đã sao chép')).catch(() => toast.error('Không thể sao chép; hãy lưu secret thủ công.'))}>Copy Client Secret</button></div></div></ConfirmDialog>;
+}
+
+export function CopyValue({ label, value }: { label: string; value: string }) {
+  const [copiedValue, setCopiedValue] = useState('');
+  return <div className="mini-copy-value"><strong>{label}</strong><code>{value || 'Chưa cấu hình'}</code><button type="button" className="btn" disabled={!value} onClick={() => { void navigator.clipboard.writeText(value).then(() => { setCopiedValue(value); toast.success(`Đã sao chép ${label}`); }).catch(() => toast.error('Không thể sao chép. Kiểm tra quyền clipboard của trình duyệt.')); }}>{value && copiedValue === value ? 'Đã sao chép' : `Copy ${label}`}</button></div>;
 }
