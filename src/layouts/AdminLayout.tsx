@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell, ChevronLeft, ChevronRight, ClipboardCheck, Command, FileText, Flag,
   Hash, Home, LogOut, Menu, MessageSquare, Moon, ScrollText,
-  Search, ShieldCheck, Sun, Users, Video, AppWindow, Code2, Sticker, WalletCards, Megaphone, Newspaper,
+  Search, ShieldCheck, Sun, Users, Video, Sticker, WalletCards, Megaphone, Newspaper,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { UserAvatar } from '../components/common';
@@ -45,14 +45,6 @@ const menuGroups: MenuGroup[] = [
       { to: '/videos', label: 'Video ngắn', icon: Video },
       { to: '/hashtags', label: 'Hashtag', icon: Hash },
       { to: '/stickers', label: 'Nhãn dán', icon: Sticker },
-    ],
-  },
-  {
-    label: 'Nền tảng',
-    items: [
-      { to: '/mini-apps', label: 'Mini Apps', icon: AppWindow },
-      { to: '/developers', label: 'Developers', icon: Code2 },
-      { to: '/mini-apps/editorial', label: 'Nội dung Mini App', icon: Code2 },
     ],
   },
   {
