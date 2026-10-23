@@ -20,6 +20,10 @@ import { StickerPacksPage } from './pages/StickerPacksPage';
 import { FinancePage } from './pages/FinancePage';
 import { WithdrawalDetailPage } from './pages/WithdrawalDetailPage';
 import { AdvertisementsPage } from './pages/AdvertisementsPage';
+import { MiniAppReviewsPage } from './pages/MiniAppReviewsPage';
+import { MiniAppReviewDetailPage } from './pages/MiniAppReviewDetailPage';
+import { MiniAppsPage } from './pages/MiniAppsPage';
+import { MiniAppDetailPage } from './pages/MiniAppDetailPage';
 import { isAuthenticated, setupAuthInterceptors, subscribeAuthChange } from './services/auth.service';
 
 const queryClient = new QueryClient({
@@ -87,6 +91,10 @@ export default function App() {
               <Route path="videos" element={<VideosPage />} />
               <Route path="admin/videos/:id" element={<VideoDetailPage />} />
               <Route path="reports" element={<ReportsPage />} />
+              <Route path="mini-app-reviews" element={<MiniAppReviewsPage />} />
+              <Route path="mini-app-reviews/:id" element={<MiniAppReviewDetailPage />} />
+              <Route path="mini-apps" element={<MiniAppsPage />} />
+              <Route path="mini-apps/:id" element={<MiniAppDetailPage />} />
               <Route path="admin/reports/:id" element={<ReportDetailPage />} />
               <Route path="hashtags" element={<HashtagsPage />} />
               <Route path="chat-rooms" element={<ChatRoomsPage />} />

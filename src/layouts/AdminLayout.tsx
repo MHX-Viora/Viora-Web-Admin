@@ -33,6 +33,7 @@ const menuGroups: MenuGroup[] = [
     label: 'Kiểm duyệt',
     items: [
       { to: '/reports', label: 'Báo cáo', icon: Flag },
+      { to: '/mini-app-reviews', label: 'Kiểm duyệt Mini App', icon: ClipboardCheck },
       { to: '/identities', label: 'Xác thực danh tính', icon: ShieldCheck },
       { to: '/advertisements', label: 'Quảng cáo', icon: Megaphone },
     ],
@@ -76,7 +77,7 @@ export function AdminLayout({ onLogout }: { onLogout: () => void }) {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => readMigratedPreference(THEME_KEY, LEGACY_THEME_KEY) === 'dark' ? 'dark' : 'light');
   const [clock, setClock] = useState(() => new Date());
   const current = useMemo(
-    () => allMenuItems.find((item) => item.to === location.pathname || (item.to !== '/' && location.pathname.startsWith(`${item.to}/`)))?.label ?? 'Bảng điều khiển',
+    () => allMenuItems.find((item) => item.to === location.pathname || (item.to !== '/' && location.pathname.startsWith(`${item.to}/`)) || (item.to === '/mini-app-reviews' && /^\/mini-apps(?:\/|$)/.test(location.pathname)))?.label ?? 'Bảng điều khiển',
     [location.pathname],
   );
   const searchResults = useMemo(() => filterNavigationItems(allMenuItems, searchQuery).slice(0, 8), [searchQuery]);
@@ -148,7 +149,7 @@ export function AdminLayout({ onLogout }: { onLogout: () => void }) {
             <div className="nav-group" key={group.label}>
               <span className="nav-group-label">{group.label}</span>
               {group.items.map(({ to, label, icon: Icon }) => (
-                <NavLink aria-label={label} data-tooltip={label} key={to} onClick={() => setMobileOpen(false)} to={to} end={to === '/'}>
+                <NavLink aria-label={label} data-tooltip={label} key={to} className={({ isActive }) => isActive || (to === '/mini-app-reviews' && /^\/mini-apps(?:\/|$)/.test(location.pathname)) ? 'active' : undefined} onClick={() => setMobileOpen(false)} to={to} end={to === '/'}>
                   <Icon aria-hidden size={18} />
                   <span>{label}</span>
                 </NavLink>

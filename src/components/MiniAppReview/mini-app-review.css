@@ -1,0 +1,44 @@
+.mini-review-page { max-width: 1200px; min-width: 0; margin-inline: auto; overflow-wrap: anywhere; }
+.mini-review-page h1 { font-size: 1.75rem; margin-block: .5rem 1rem; }
+.mini-review-page h2 { font-size: 1.125rem; margin-block: 0 1rem; }
+.mini-review-page h3 { font-size: 1rem; margin-block: 1.5rem .75rem; }
+.mini-review-heading, .mini-review-queue li, .mini-review-pagination { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.mini-review-heading > div, .mini-review-queue li > div { min-width: 0; }
+.mini-review-app-identity { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: .75rem; align-items: center; }
+.mini-review-logo { width: 40px; height: 40px; border-radius: var(--radius-xs); object-fit: contain; background: var(--surface-soft); display: inline-grid; place-items: center; vertical-align: middle; margin-right: .5rem; }
+.mini-review-section { margin-block: 1.5rem; padding: 1.5rem; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-sm); }
+.mini-review-filters, .mini-review-tabs, .mini-review-actions { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; margin-block: 1.25rem; }
+.mini-review-page label { display: grid; gap: .5rem; font-weight: 500; min-width: 0; }
+.mini-review-page input, .mini-review-page select, .mini-review-page textarea { width: 100%; min-width: 0; max-width: 100%; padding: .625rem .75rem; border: 1px solid var(--border-strong); border-radius: var(--radius-xs); color: var(--text); background: var(--surface); font: inherit; }
+.mini-review-page button, .mini-review-dialog button, .mini-review-tabs a { min-height: 44px; }
+.mini-review-counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); border: 1px solid var(--border); background: var(--surface); }
+.mini-review-counts > * { display: grid; gap: .75rem; padding: 1rem; background: transparent; border: 0; color: var(--text); text-align: left; font: inherit; cursor: pointer; }
+.mini-review-counts strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.mini-review-queue { list-style: none; padding: 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.mini-review-queue li { padding: 1.25rem; border-bottom: 1px solid var(--border); }
+.mini-review-queue li:last-child { border-bottom: 0; }
+.mini-review-queue p { margin-block: .5rem; }
+.mini-review-facts { display: grid; grid-template-columns: minmax(110px, 1fr) minmax(0, 3fr); gap: .75rem 1.5rem; }
+.mini-review-facts dt { color: var(--muted); }
+.mini-review-facts dd { margin: 0; min-width: 0; }
+.mini-review-facts ul { margin: 0; padding-left: 1.25rem; }
+.mini-review-check { display: contents; }
+.mini-review-check small { display: block; margin-top: .25rem; }
+.mini-review-prose { white-space: pre-wrap; line-height: 1.6; }
+.mini-review-timeline { padding-left: 1.5rem; }
+.mini-review-timeline li { padding-block: .75rem; border-bottom: 1px solid var(--border); }
+.mini-review-page summary { cursor: pointer; min-height: 44px; padding-block: .625rem; }
+.mini-review-pagination { justify-content: end; margin-block: 1rem; }
+.mini-review-pagination > span { margin-right: auto; }
+.mini-review-dialog { max-width: min(640px, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); color: var(--text); }
+.mini-review-dialog::backdrop { background: rgba(16, 24, 40, .55); }
+.mini-review-dialog form { display: grid; gap: 1rem; }
+.mini-review-dialog textarea { min-height: 100px; }
+.mini-review-page :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 600px) {
+  .mini-review-section { padding: 1rem; }
+  .mini-review-facts { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
+  .mini-review-facts dd { margin-bottom: .75rem; }
+  .mini-review-filters > label:first-child { flex-basis: 100%; }
+  .mini-review-heading { align-items: start; }
+}
