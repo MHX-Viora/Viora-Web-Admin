@@ -27,7 +27,7 @@ export const parseReview = shape({ id: parseId, versionId: parseId, versionCode:
 const check = shape({ key: text(128), applicable: bool, status: text(64), messageCode: text(200), evidenceSource: text(200), evidenceAt: nullable(date) });
 const change = shape({ field: text(64), message: text(2000) });
 const action = shape({ action: text(64), actorType: oneOf(['Developer', 'Admin', 'System']), beforeState: nullable(text(64)), afterState: nullable(text(64)), reason: nullable(text(2000)), createdAt: date });
-const reviewDetail = shape({ review: parseReview, versionName: text(100), snapshotHash: hash, snapshot: parseSnapshot, evidence: shape({ schemaVersion: integer(1, 1), versionId: parseId, snapshotHash: hash, sandboxRunId: parseId, configurationFingerprint: fingerprint, evaluatedAt: date, checks: list(check, 100) }), reason: nullable(text(2000)), changes: list(change, 20), actions: list(action, 100) });
+const reviewDetail = shape({ review: parseReview, versionName: text(100), snapshotHash: hash, snapshot: parseSnapshot, evidence: shape({ schemaVersion: integer(1, 2), versionId: parseId, snapshotHash: hash, sandboxRunId: parseId, configurationFingerprint: fingerprint, evaluatedAt: date, checks: list(check, 100) }), reason: nullable(text(2000)), changes: list(change, 20), actions: list(action, 100) });
 const queueItem = shape({ review: parseReview, appId: parseAppId, appName: text(200), versionName: text(100), developerName: text(200), developerEmail: text(254), assignedAdminAccountId: nullable(parseId), logoUrl: nullable(text(2048)) });
 const page = <T>(item: Parser<T>) => shape({ items: list(item, 100), page: integer(1, 100000), pageSize: integer(1, 100), total: integer(0) });
 export const parseReviewPage = page(queueItem);
