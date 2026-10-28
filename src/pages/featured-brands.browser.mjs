@@ -3,6 +3,11 @@ import { build } from '../../../viora/node_modules/esbuild/lib/main.js';
 import { openDocsBrowser } from '../../../viora/features/developer/docs/tests/browser-fixture.mjs';
 import { createServer } from 'node:http';
 import path from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+const imagePath = path.resolve('.codex-tmp/admin-upload.png');
+await mkdir(path.dirname(imagePath), { recursive: true });
+await writeFile(imagePath, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aD1sAAAAASUVORK5CYII=', 'base64'));
+let uploadCount = 0;
 
 const result = await build({ stdin: { contents: `
   import React from 'react';import {createRoot} from 'react-dom/client';
@@ -19,6 +24,14 @@ let items = [], sequence = 0;
 const calls = [];
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, 'http://local.test');
+  if (url.pathname === '/api/admin/images') {
+    let raw = Buffer.alloc(0); for await (const chunk of req) raw = Buffer.concat([raw, chunk]);
+    assert.ok(req.headers['content-type'].includes('multipart/form-data'));
+    assert.ok(raw.includes(Buffer.from('admin-upload.png')));
+    uploadCount++;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ url: 'https://images.example.test/' + (uploadCount > 1 ? 'updated.webp' : 'logo.webp') })); return;
+  }
   if (url.pathname.startsWith('/api/admin/featured-brands')) {
     calls.push(req.method); res.setHeader('Content-Type', 'application/json');
     let raw = ''; for await (const chunk of req) raw += chunk;
@@ -48,9 +61,15 @@ try {
     await browser.rpc('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
     await browser.rpc('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
   };
+  const chooseImage = async () => {
+    const { root } = await browser.rpc('DOM.getDocument');
+    const { nodeId } = await browser.rpc('DOM.querySelector', { nodeId: root.nodeId, selector: 'form input[type=file]' });
+    await browser.rpc('DOM.setFileInputFiles', { nodeId, files: [imagePath] });
+    await browser.wait('!!document.querySelector(".image-file-field img")?.src.startsWith("blob:")');
+  };
   await clickText('Thêm thương hiệu');
   await browser.click('form input[maxlength="160"]'); await browser.rpc('Input.insertText', { text: 'Sample brand' });
-  await browser.click('form input[type=url]'); await browser.rpc('Input.insertText', { text: 'https://images.example.test/logo.webp' });
+  await chooseImage();
   await clickText('Lưu thương hiệu');
   await browser.wait('document.querySelectorAll(".featured-brand-list article").length===1');
   assert.equal(items[0].isActive, false);
@@ -66,6 +85,7 @@ try {
   await browser.key('Escape'); await browser.wait('!document.querySelector("[role=dialog]")'); assert.equal(items.length, 1);
   await clickText('Xóa'); await clickText('Xóa thương hiệu'); await browser.wait('document.body.textContent.includes("Chưa có thương hiệu")');
   assert.deepEqual(calls.filter(method => method !== 'GET'), ['POST', 'PUT', 'PUT', 'DELETE']);
+  assert.equal(uploadCount, 1);
   assert.deepEqual(browser.issues, []);
   console.log('PASS admin brand page: create, preview/form, activate, edit, responsive bounds, cancel and confirm delete.');
 } catch (error) {

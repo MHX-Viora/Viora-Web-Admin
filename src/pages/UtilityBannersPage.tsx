@@ -5,6 +5,8 @@ import { deleteUtilityBanner, getUtilityBanners, saveUtilityBanner, type Utility
 import { getErrorMessage } from '../services/http';
 import '../utility-banners.css';
 import { ModalFrame } from '../components/ModalFrame';
+import { ImageFileField } from '../components/ImageFileField';
+import { uploadAdminImage } from '../services/admin-image.service';
 
 const empty: UtilityBannerInput = { imageUrl: '', targetUrl: null, isActive: false, version: 0 };
 export function UtilityBannersPage() {
@@ -14,11 +16,17 @@ export function UtilityBannersPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<UtilityBanner | null>(null);
   const [busy, setBusy] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const refresh = () => client.invalidateQueries({ queryKey: ['utility-banners'] });
   async function submit(event: FormEvent) {
     event.preventDefault(); if (!draft || busy) return;
     setBusy(true);
-    try { await saveUtilityBanner(editing, draft); setDraft(null); await refresh(); toast.success('Đã lưu banner.'); }
+    try {
+      const imageUrl = imageFile ? await uploadAdminImage(imageFile) : draft.imageUrl;
+      if (!imageUrl) throw new Error('Vui lòng chọn ảnh banner.');
+      setDraft({ ...draft, imageUrl }); setImageFile(null);
+      await saveUtilityBanner(editing, { ...draft, imageUrl }); setDraft(null); await refresh(); toast.success('Đã lưu banner.');
+    }
     catch (error) { toast.error(getErrorMessage(error)); }
     finally { setBusy(false); }
   }
@@ -40,12 +48,11 @@ export function UtilityBannersPage() {
     {draft && <form className="utility-banner-form" onSubmit={submit} aria-busy={busy}>
       <h2>{editing ? 'Sửa banner' : 'Banner mới'}</h2>
       <fieldset disabled={busy}>
-        <label>URL ảnh HTTPS<input required type="url" pattern="https://.*" maxLength={2048} placeholder="https://…/banner.webp" value={draft.imageUrl} onChange={e => setDraft({ ...draft, imageUrl: e.target.value })} /></label>
+        <ImageFileField label="Ảnh banner" required file={imageFile} existingUrl={draft.imageUrl} onChange={setImageFile} disabled={busy} />
         <p>Dùng ảnh ngang tỷ lệ 5:2 (gợi ý 1200 × 480px). Banner giãn theo chiều rộng vùng hiển thị. Ảnh khác tỷ lệ sẽ được cắt vừa khung.</p>
         <label>Liên kết khi bấm (tùy chọn)<input maxLength={2048} placeholder="/wallet hoặc https://…" value={draft.targetUrl ?? ''} onChange={e => setDraft({ ...draft, targetUrl: e.target.value || null })} /></label>
         <label className="utility-banner-check"><input type="checkbox" checked={draft.isActive} onChange={e => setDraft({ ...draft, isActive: e.target.checked })} />Đang bật</label>
-        {draft.imageUrl.startsWith('https://') && <img className="utility-banner-preview" src={draft.imageUrl} alt="Xem trước banner" referrerPolicy="no-referrer" />}
-        <div className="utility-banner-actions"><button type="submit" className="btn primary">{busy ? 'Đang lưu…' : 'Lưu banner'}</button><button type="button" className="btn ghost" onClick={() => setDraft(null)}>Hủy</button></div>
+        <div className="utility-banner-actions"><button type="submit" className="btn primary">{busy ? 'Đang lưu…' : 'Lưu banner'}</button><button type="button" className="btn ghost" onClick={() => { setDraft(null); setImageFile(null); }}>Hủy</button></div>
       </fieldset>
     </form>}
     {query.isPending ? <p role="status">Đang tải banner…</p> : query.isError ? <div role="alert"><p>{getErrorMessage(query.error)}</p><button type="button" className="btn ghost" onClick={() => void query.refetch()}>Thử lại</button></div> :

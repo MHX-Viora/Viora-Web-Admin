@@ -4,6 +4,8 @@ import { toast } from 'sonner';
 import { deleteFeaturedBrand, getFeaturedBrands, saveFeaturedBrand, type FeaturedBrand, type FeaturedBrandInput } from '../services/admin-featured-brand.service';
 import { getErrorMessage } from '../services/http';
 import { ModalFrame } from '../components/ModalFrame';
+import { ImageFileField } from '../components/ImageFileField';
+import { uploadAdminImage } from '../services/admin-image.service';
 import '../featured-brands.css';
 
 const empty: FeaturedBrandInput = { name: '', logoUrl: '', sortOrder: 0, isActive: false, version: 0 };
@@ -14,10 +16,16 @@ export function FeaturedBrandsPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<FeaturedBrand | null>(null);
   const [busy, setBusy] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const refresh = () => client.invalidateQueries({ queryKey: ['featured-brands'] });
   async function submit(event: FormEvent) {
     event.preventDefault(); if (!draft || busy) return; setBusy(true);
-    try { await saveFeaturedBrand(editing, draft); setDraft(null); await refresh(); toast.success('Đã lưu thương hiệu.'); }
+    try {
+      const logoUrl = imageFile ? await uploadAdminImage(imageFile) : draft.logoUrl;
+      if (!logoUrl) throw new Error('Vui lòng chọn logo thương hiệu.');
+      setDraft({ ...draft, logoUrl }); setImageFile(null);
+      await saveFeaturedBrand(editing, { ...draft, logoUrl }); setDraft(null); await refresh(); toast.success('Đã lưu thương hiệu.');
+    }
     catch (error) { toast.error(getErrorMessage(error)); }
     finally { setBusy(false); }
   }
@@ -41,12 +49,11 @@ export function FeaturedBrandsPage() {
       <h2>{editing ? 'Sửa thương hiệu' : 'Thương hiệu mới'}</h2>
       <fieldset disabled={busy}>
         <label>Tên thương hiệu<input required maxLength={160} value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} /></label>
-        <label>URL logo HTTPS<input required type="url" pattern="https://.*" maxLength={2048} placeholder="https://…/logo.png" value={draft.logoUrl} onChange={e => setDraft({ ...draft, logoUrl: e.target.value })} /></label>
+        <ImageFileField label="Logo thương hiệu" required file={imageFile} existingUrl={draft.logoUrl} onChange={setImageFile} disabled={busy} />
         <p>Gợi ý PNG/WebP nền trong suốt. Logo được giữ nguyên tỷ lệ, không cắt ảnh.</p>
         <label>Thứ tự<input required type="number" min={0} max={10000} step={1} value={draft.sortOrder} onChange={e => setDraft({ ...draft, sortOrder: Number(e.target.value) })} /></label>
         <label className="featured-brand-check"><input type="checkbox" checked={draft.isActive} onChange={e => setDraft({ ...draft, isActive: e.target.checked })} />Đang bật</label>
-        {draft.logoUrl.startsWith('https://') && <img className="featured-brand-preview" src={draft.logoUrl} alt={draft.name || 'Xem trước logo'} referrerPolicy="no-referrer" />}
-        <div className="featured-brand-actions"><button type="submit" className="btn primary">{busy ? 'Đang lưu…' : 'Lưu thương hiệu'}</button><button type="button" className="btn ghost" onClick={() => setDraft(null)}>Hủy</button></div>
+        <div className="featured-brand-actions"><button type="submit" className="btn primary">{busy ? 'Đang lưu…' : 'Lưu thương hiệu'}</button><button type="button" className="btn ghost" onClick={() => { setDraft(null); setImageFile(null); }}>Hủy</button></div>
       </fieldset>
     </form>}
     {query.isPending ? <p role="status">Đang tải thương hiệu…</p> : query.isError ? <div role="alert"><p>{getErrorMessage(query.error)}</p><button type="button" className="btn ghost" onClick={() => void query.refetch()}>Thử lại</button></div> :

@@ -7,6 +7,8 @@ import { deleteHashtag, getAdminLogs, getChatRoom, getChatRooms, getHashtags, re
 import { getErrorMessage } from '../services/http';
 import type { AdminLog, ChatRoom, Hashtag, NotificationPayload } from '../types/admin';
 import { formatDate, formatNumber } from '../utils/format';
+import { ImageFileField } from '../components/ImageFileField';
+import { uploadAdminImage } from '../services/admin-image.service';
 
 const chatTypeLabels: Record<string, string> = {
   direct: 'Trực tiếp',
@@ -107,24 +109,30 @@ export function ChatRoomsPage() {
 
 export function NotificationsPage() {
   const [payload, setPayload] = useState<NotificationPayload>({ title: '', content: '', imageUrl: '', sendTo: 'all' });
-  const mutation = useMutation({ mutationFn: sendSystemNotification, onSuccess: () => toast.success('Đã gửi thông báo'), onError: (error) => toast.error(getErrorMessage(error)) });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const mutation = useMutation({ mutationFn: async (input: NotificationPayload) => {
+    const imageUrl = imageFile ? await uploadAdminImage(imageFile) : input.imageUrl;
+    return sendSystemNotification({ ...input, imageUrl: imageUrl || undefined });
+  }, onSuccess: () => toast.success('Đã gửi thông báo'), onError: (error) => toast.error(getErrorMessage(error)) });
 
   function submit(event: FormEvent) {
     event.preventDefault();
-    if (!payload.title.trim() || !payload.content.trim()) return;
+    if (mutation.isPending || !payload.title.trim() || !payload.content.trim()) return;
     if (window.confirm('Gửi thông báo hệ thống?')) mutation.mutate({ ...payload, title: payload.title.trim(), content: payload.content.trim(), imageUrl: payload.imageUrl?.trim() || undefined });
   }
 
   return (
     <section>
       <PageHeader title="Thông báo hệ thống" description="Soạn nội dung, xem trước và gửi theo nhóm người dùng." />
-      <form className="form-grid" onSubmit={submit}>
+      <form className="form-grid" onSubmit={submit} aria-busy={mutation.isPending}>
+        <fieldset className="notification-fields" disabled={mutation.isPending}>
         <label>Tiêu đề<input value={payload.title} onChange={(event) => setPayload({ ...payload, title: event.target.value })} required /></label>
         <label>Nội dung<textarea value={payload.content} onChange={(event) => setPayload({ ...payload, content: event.target.value })} required /></label>
-        <label>Ảnh<input value={payload.imageUrl} onChange={(event) => setPayload({ ...payload, imageUrl: event.target.value })} /></label>
+        <ImageFileField label="Ảnh thông báo (tùy chọn)" file={imageFile} onChange={setImageFile} disabled={mutation.isPending} />
         <label>Gửi đến<select value={payload.sendTo} onChange={(event) => setPayload({ ...payload, sendTo: event.target.value as NotificationPayload['sendTo'] })}><option value="all">Tất cả</option><option value="verified">Đã xác thực</option><option value="unverified">Chưa xác thực</option></select></label>
         <div className="preview-box"><strong>{payload.title || 'Tiêu đề xem trước'}</strong><p>{payload.content || 'Nội dung xem trước'}</p>{payload.imageUrl ? <img src={payload.imageUrl} alt="Bản xem trước" /> : null}</div>
         <button className="btn primary" disabled={mutation.isPending} type="submit">Gửi thông báo</button>
+        </fieldset>
       </form>
     </section>
   );
