@@ -1,8 +1,8 @@
 import { apiClient, unwrapApiData } from './http';
 
 export type UtilityBannerInput = {
-  title: string; imageUrl: string; targetUrl: string | null;
-  sortOrder: number; isActive: boolean; version: number;
+  imageUrl: string; targetUrl: string | null;
+  isActive: boolean; version: number;
 };
 export type UtilityBanner = UtilityBannerInput & { id: string };
 export const getUtilityBanners = async () => unwrapApiData<UtilityBanner[]>((await apiClient.get('/api/admin/utility-banners', { headers: { 'Cache-Control': 'no-cache' } })).data);

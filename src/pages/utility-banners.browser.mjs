@@ -23,6 +23,7 @@ const server = createServer(async (req, res) => {
     calls.push(req.method); res.setHeader('Content-Type', 'application/json');
     let raw = ''; for await (const chunk of req) raw += chunk;
     const body = raw ? JSON.parse(raw) : {};
+    if (req.method === 'POST' || req.method === 'PUT') { assert.equal('title' in body, false); assert.equal('sortOrder' in body, false); }
     if (req.method === 'GET') { res.end(JSON.stringify(items)); return; }
     if (req.method === 'POST') { const item = { ...body, id: 'banner-' + ++sequence, version: 1 }; items.push(item); res.end(JSON.stringify(item)); return; }
     const item = items.find(item => item.id === url.pathname.split('/').at(-1));
@@ -49,15 +50,16 @@ try {
     await browser.rpc('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
   };
   await clickText('Thêm banner');
-  await browser.click('form input[maxlength="160"]'); await browser.rpc('Input.insertText', { text: 'Summer banner' });
+  assert.equal(await browser.read('Array.from(document.querySelectorAll("form input")).some(input => input.maxLength === 160 || input.type === "number")'), false);
+  assert.equal(await browser.read('document.body.textContent.includes("Tiêu đề / mô tả ảnh") || document.body.textContent.includes("Thứ tự")'), false);
   await browser.click('form input[type=url]'); await browser.rpc('Input.insertText', { text: 'https://images.example.test/banner.webp' });
   await clickText('Lưu banner');
   await browser.wait('document.querySelectorAll(".utility-banner-list article").length===1');
   assert.equal(items[0].isActive, false);
   await clickText('Bật'); await browser.wait('document.querySelector(".utility-banner-list").textContent.includes("Đang bật")');
   assert.equal(items[0].isActive, true);
-  await clickText('Sửa'); await browser.click('form input[maxlength="160"]'); await browser.key('a', 2); await browser.rpc('Input.insertText', { text: 'Updated banner' });
-  await clickText('Lưu banner'); await browser.wait('document.querySelector(".utility-banner-list h2").textContent==="Updated banner"');
+  await clickText('Sửa'); await browser.click('form input[type=url]'); await browser.key('a', 2); await browser.rpc('Input.insertText', { text: 'https://images.example.test/updated.webp' });
+  await clickText('Lưu banner'); await browser.wait('document.querySelector(".utility-banner-list img").src==="https://images.example.test/updated.webp"');
   for (const width of [1440, 375]) {
     await browser.rpc('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
     await browser.wait('document.documentElement.scrollWidth<=innerWidth');
