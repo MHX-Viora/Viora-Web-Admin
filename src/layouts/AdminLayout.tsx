@@ -16,7 +16,7 @@ type MenuGroup = { label: string; items: MenuItem[] };
 const menuGroups: MenuGroup[] = [
   {
     label: 'Tài chính',
-    items: [{ to: '/finance', label: 'Ví & giao dịch', icon: WalletCards }],
+    items: [{ to: '/finance', label: 'Tài chính', icon: WalletCards }],
   },
   {
     label: 'Tổng quan',

@@ -1,4 +1,10 @@
 export type FinancePage<T> = { data: T[]; page: number; pageSize: number; totalItems: number; totalPages: number };
+export type FinanceFilters = { from?: string; to?: string; type?: string; status?: string };
+export type RevenueSource = '' | 'advertising' | 'withdrawal_fee';
+export type RevenueItem = { id: string; source: Exclude<RevenueSource, ''>; userId: string; displayName: string; amount: number; occurredAt: string; referenceType: string; referenceId: string; description: string };
+export type FinanceDailyRevenue = { date: string; advertisingRevenue: number; withdrawalFeeRevenue: number; totalRevenue: number };
+export type FinanceOverview = { from: string; to: string; timeZone: string; generatedAt: string; depositedAmount: number; withdrawnNetAmount: number; advertisingRevenue: number; withdrawalFeeRevenue: number; totalRevenue: number; availableBalance: number; heldBalance: number; pendingWithdrawals: number; processingWithdrawals: number; outstandingWithdrawalAmount: number; daily: FinanceDailyRevenue[] };
+export type ReconciliationIssue = { code: string; id: string; userId: string | null; displayName: string; referenceType: string; referenceId: string; expectedAmount: number; actualAmount: number; detectedAt: string };
 export type AdminWallet = { anktCoinBalance?: number; id: string; userId: string; displayName: string; availableBalance: number; heldBalance: number; currency: string; status: number; createdAt: string; updatedAt: string };
 export type AdminWalletTransaction = { id: string; walletId: string; userId: string; displayName: string; type: number; amount: number; status: number; referenceType: string; referenceId: string; description: string | null; createdAt: string; balanceBefore: number; balanceAfter: number; heldBefore: number; heldAfter: number; adminId: string | null; adjustmentReason: string | null; coinAmount: number | null };
 export type AdminPayment = { id: string; userId: string; displayName: string; amount: number; currency: string; provider: string; providerOrderCode: number; providerTransactionId: string | null; status: number; createdAt: string; paidAt: string | null };
