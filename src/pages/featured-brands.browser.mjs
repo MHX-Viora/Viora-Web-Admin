@@ -53,7 +53,7 @@ let browser;
 try {
   browser = await openDocsBrowser();
   await browser.rpc('Page.navigate', { url: `http://127.0.0.1:${server.address().port}/` });
-  await browser.wait('document.body.textContent.includes("Chưa có thương hiệu")');
+  await browser.wait('document.body?.textContent.includes("Chưa có thương hiệu")');
   const clickText = async text => {
     const index = await browser.read(`Array.from(document.querySelectorAll('button')).findIndex(e=>e.textContent===${JSON.stringify(text)})`);
     assert.ok(index >= 0, text);
@@ -68,11 +68,12 @@ try {
     await browser.wait('!!document.querySelector(".image-file-field img")?.src.startsWith("blob:")');
   };
   await clickText('Thêm thương hiệu');
-  await browser.click('form input[maxlength="160"]'); await browser.rpc('Input.insertText', { text: 'Sample brand' });
+  assert.equal(await browser.read(`document.querySelector('form input[maxlength="160"]').required`), false);
   await chooseImage();
   await clickText('Lưu thương hiệu');
   await browser.wait('document.querySelectorAll(".featured-brand-list article").length===1');
   assert.equal(items[0].isActive, false);
+  assert.equal(items[0].name, '');
   await clickText('Bật'); await browser.wait('document.querySelector(".featured-brand-list").textContent.includes("Đang bật")');
   assert.equal(items[0].isActive, true);
   await clickText('Sửa'); await browser.click('form input[maxlength="160"]'); await browser.key('a', 2); await browser.rpc('Input.insertText', { text: 'Updated brand' });

@@ -48,7 +48,7 @@ export function FeaturedBrandsPage() {
     {draft && <form className="featured-brand-form" onSubmit={submit} aria-busy={busy}>
       <h2>{editing ? 'Sửa thương hiệu' : 'Thương hiệu mới'}</h2>
       <fieldset disabled={busy}>
-        <label>Tên thương hiệu<input required maxLength={160} value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} /></label>
+        <label>Tên thương hiệu (tùy chọn)<input maxLength={160} placeholder="Có thể bỏ trống" value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} /></label>
         <ImageFileField label="Logo thương hiệu" required file={imageFile} existingUrl={draft.logoUrl} onChange={setImageFile} disabled={busy} />
         <p>Gợi ý PNG/WebP nền trong suốt. Logo được giữ nguyên tỷ lệ, không cắt ảnh.</p>
         <label>Thứ tự<input required type="number" min={0} max={10000} step={1} value={draft.sortOrder} onChange={e => setDraft({ ...draft, sortOrder: Number(e.target.value) })} /></label>
@@ -58,8 +58,8 @@ export function FeaturedBrandsPage() {
     </form>}
     {query.isPending ? <p role="status">Đang tải thương hiệu…</p> : query.isError ? <div role="alert"><p>{getErrorMessage(query.error)}</p><button type="button" className="btn ghost" onClick={() => void query.refetch()}>Thử lại</button></div> :
       <div className="featured-brand-list">{query.data?.length ? query.data.map(item => <article key={item.id}>
-        <img src={item.logoUrl} alt={item.name} referrerPolicy="no-referrer" />
-        <div><h2>{item.name}</h2><p>Thứ tự {item.sortOrder} · {item.isActive ? 'Đang bật' : 'Đã ẩn'}</p></div>
+        <img src={item.logoUrl} alt={item.name || 'Thương hiệu'} referrerPolicy="no-referrer" />
+        <div><h2>{item.name || 'Thương hiệu'}</h2><p>Thứ tự {item.sortOrder} · {item.isActive ? 'Đang bật' : 'Đã ẩn'}</p></div>
         <div className="featured-brand-actions"><button className="btn ghost" type="button" disabled={busy || !!draft} onClick={() => { setEditing(item.id); setDraft({ name: item.name, logoUrl: item.logoUrl, sortOrder: item.sortOrder, isActive: item.isActive, version: item.version }); }}>Sửa</button>
           <button className="btn ghost" type="button" disabled={busy || !!draft} onClick={() => void toggle(item)}>{item.isActive ? 'Ẩn' : 'Bật'}</button>
           <button className="btn ghost" type="button" disabled={busy || !!draft} onClick={() => setDeleting(item)}>Xóa</button></div>

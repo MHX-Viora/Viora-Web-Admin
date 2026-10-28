@@ -8,6 +8,8 @@ Every image authoring field accepts a file from the admin's computer instead of 
 - Shared accessible file field previews selection and reports invalid type/size. Release object URLs on replacement/unmount. Required images block save when absent; optional notification images can be omitted.
 - Upload when saving, then send the resulting HTTPS URL through existing create/update contracts. Preserve current images on edits without a replacement. Errors keep the draft; prevent duplicate submissions.
 - Individual stickers use their existing pack-scoped upload endpoint, accept PNG/WebP and no longer expose an editable image URL.
+- Follow-up: brand name is optional; backend normalizes missing/blank name to `Thương hiệu` for existing public consumers. Empty API failures must always show readable errors; missing upload endpoint must explicitly identify the required backend deployment. Native file input must retain the chosen filename until the selection is removed/saved.
+- Invalid file replacements clear pending selection and block form submission until corrected or discarded. Existing saved images remain available. Malformed upload responses must give readable errors and must never be used as image URLs.
 
 ## Plan
 1. Backend: tests for validation, authorization and storage failure, then shared upload endpoint/storage adapter. Verify focused dotnet tests.

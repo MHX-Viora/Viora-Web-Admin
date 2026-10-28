@@ -34,7 +34,7 @@ const server = createServer(async (req, res) => {
       uploadCount++;
       assert.ok(req.headers['content-type'].includes('multipart/form-data'));
       assert.ok(bytes.includes(png));
-      if (failUpload) { res.statusCode = 503; res.end(JSON.stringify({ error: { message: 'Upload test failure' } })); return; }
+      if (failUpload) { res.statusCode = 404; res.end(''); return; }
       res.end(JSON.stringify({ url: 'https://images.example.test/chosen.png' })); return;
     }
     if (pathname === '/api/admin/announcements') { announcements.push(JSON.parse(bytes)); res.end('{}'); return; }
@@ -78,6 +78,15 @@ try {
   await browser.wait('!!document.querySelector(".image-file-field [role=alert]")'); assert.equal(uploadCount, 0);
   await file('input[type=file]');
   await browser.wait('!!document.querySelector(".image-file-field img")?.src.startsWith("blob:")');
+  assert.equal(await browser.read('document.querySelector("input[type=file]").files[0]?.name'), 'image.png');
+  // Rejecting a replacement must not silently keep the previous pending image.
+  await file('input[type=file]', 'invalid.svg');
+  await browser.wait('!!document.querySelector(".image-file-field [role=alert]")');
+  assert.equal(await browser.read('document.querySelector("form").checkValidity()'), false);
+  assert.equal(await browser.read('!!document.querySelector(".image-file-field img")'), false);
+  assert.equal(uploadCount, 0);
+  await file('input[type=file]');
+  await browser.wait('!!document.querySelector(".image-file-field img")?.src.startsWith("blob:")');
   for (const width of [375, 1440]) {
     await browser.rpc('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
     await browser.wait('document.documentElement.scrollWidth<=innerWidth');
@@ -86,7 +95,7 @@ try {
     await writeFile(path.join(directory, `notification-${width}.png`), Buffer.from(shot.data, 'base64'));
   }
   await browser.click('button[type=submit]');
-  await browser.wait('document.body.textContent.includes("Upload test failure")');
+  await browser.wait('document.body.textContent.includes("API tải ảnh admin chưa được triển khai")');
   assert.equal(announcements.length, 1);
   assert.equal(await browser.read('!!document.querySelector(".image-file-field img")?.src.startsWith("blob:")'), true);
   failUpload = false;
@@ -95,7 +104,8 @@ try {
   await browser.wait('!document.querySelector("button[type=submit]").disabled');
   assert.equal(announcements.length, 2); assert.equal(announcements[1].imageUrl, 'https://images.example.test/chosen.png');
   await browser.click('.image-file-field button');
-  await browser.wait('window.released.length===1 && !document.querySelector(".image-file-field img")');
+  await browser.wait('window.released.length===2 && !document.querySelector(".image-file-field img")');
+  assert.equal(await browser.read('document.querySelector("input[type=file]").files.length'), 0);
   for (const width of [375, 1440]) {
     await browser.rpc('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
     await browser.wait('document.documentElement.scrollWidth<=innerWidth');

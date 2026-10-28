@@ -14,3 +14,16 @@ Commands (admin cwd):
 `npm run build` / `npm run lint`
 
 BE cwd: `dotnet test Viora.Application.Tests --no-restore --filter FullyQualifiedName~AdminImageUploadTests -m:1 -nr:false /p:UseSharedCompilation=false`
+
+## Follow-up: production upload failures and optional brand names
+- Live anonymous POST probe to `/api/admin/images` returned empty 404 on both `api.mxh.ankt.vn` and the legacy Render host. Admin has shipped ahead of BE; deploy the upload endpoint/DI/storage changes before expecting successful image saves. No production deployment performed here.
+- Empty error strings previously produced an empty toast. `getErrorMessage` now ignores blank values, reads validation ProblemDetails and supplies status-specific fallbacks; upload 404 explicitly says the backend endpoint needs deployment, and 413 explains image/proxy limits. Applies across all admin forms.
+- File input now retains its native selected filename after selection and clears when pending selection is removed or a draft completes. No change to preview URL lifecycle.
+- Brand name is optional in admin and BE request validation. Missing/null/blank names normalize to `Thương hiệu` so existing DB/public-client contracts and accessible logo names remain valid; no schema or public-client changes needed. The 160-character limit remains.
+- Regression verification: 18 BE tests (brand validation/persistence, real HTTP omitted-name create, upload); frontend image/error unit tests; browser brand creation without name, banner create/edit, notification empty-404/retry, native filename/reset and sticker creation. Build and full lint checked. Latest changes are local and not committed/deployed.
+
+## Follow-up: rejected replacements and malformed responses
+- Reproduced an invalid replacement leaving the previous pending image in React state while the native input was empty; optional-image forms were still valid. Rejection now clears the pending file and sets native custom validity. Selecting a valid image or discarding the invalid selection restores validity; saved existing images remain available. Sticker creation is also disabled when a rejected replacement clears its file.
+- Upload responses are treated as unknown data. Missing/malformed URLs, HTML fallback responses, credentials, non-HTTPS schemes, whitespace/control characters and backslashes are rejected with a readable message instead of raw TypeError/Invalid URL errors.
+- Browser regression verifies valid -> invalid -> valid replacement, form blocking and preview URL cleanup, then upload 404/retry and successful notification/sticker creation. No live data writes.
+- Final admin verification: all 45 unit tests, production build, full ESLint and all three image browser fixtures pass.
