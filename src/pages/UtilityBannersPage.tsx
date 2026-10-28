@@ -49,7 +49,7 @@ export function UtilityBannersPage() {
       <h2>{editing ? 'Sửa banner' : 'Banner mới'}</h2>
       <fieldset disabled={busy}>
         <ImageFileField label="Ảnh banner" required file={imageFile} existingUrl={draft.imageUrl} onChange={setImageFile} disabled={busy} />
-        <p>Dùng ảnh ngang tỷ lệ 5:2 (gợi ý 1200 × 480px). Banner giãn theo chiều rộng vùng hiển thị. Ảnh khác tỷ lệ sẽ được cắt vừa khung.</p>
+        <p>Banner hiển thị trọn ảnh, phần trống được lấp bằng nền ảnh làm mờ. Gợi ý ảnh ngang 1200 × 480px để phù hợp vùng hiển thị.</p>
         <label>Liên kết khi bấm (tùy chọn)<input maxLength={2048} placeholder="/wallet hoặc https://…" value={draft.targetUrl ?? ''} onChange={e => setDraft({ ...draft, targetUrl: e.target.value || null })} /></label>
         <label className="utility-banner-check"><input type="checkbox" checked={draft.isActive} onChange={e => setDraft({ ...draft, isActive: e.target.checked })} />Đang bật</label>
         <div className="utility-banner-actions"><button type="submit" className="btn primary">{busy ? 'Đang lưu…' : 'Lưu banner'}</button><button type="button" className="btn ghost" onClick={() => { setDraft(null); setImageFile(null); }}>Hủy</button></div>
