@@ -46,6 +46,8 @@ const menuGroups: MenuGroup[] = [
       { to: '/videos', label: 'Video ngắn', icon: Video },
       { to: '/hashtags', label: 'Hashtag', icon: Hash },
       { to: '/stickers', label: 'Nhãn dán', icon: Sticker },
+      { to: '/utility-banners', label: 'Banner tiện ích', icon: Megaphone },
+      { to: '/featured-brands', label: 'Thương hiệu nổi bật', icon: ShieldCheck },
     ],
   },
   {

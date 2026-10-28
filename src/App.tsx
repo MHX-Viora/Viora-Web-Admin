@@ -20,6 +20,8 @@ import { StickerPacksPage } from './pages/StickerPacksPage';
 import { FinancePage } from './pages/FinancePage';
 import { WithdrawalDetailPage } from './pages/WithdrawalDetailPage';
 import { AdvertisementsPage } from './pages/AdvertisementsPage';
+import { UtilityBannersPage } from './pages/UtilityBannersPage';
+import { FeaturedBrandsPage } from './pages/FeaturedBrandsPage';
 import { MiniAppReviewsPage } from './pages/MiniAppReviewsPage';
 import { MiniAppReviewDetailPage } from './pages/MiniAppReviewDetailPage';
 import { MiniAppsPage } from './pages/MiniAppsPage';
@@ -105,6 +107,8 @@ export default function App() {
               <Route path="finance" element={<FinancePage />} />
               <Route path="finance/withdrawals/:id" element={<WithdrawalDetailPage />} />
               <Route path="advertisements" element={<AdvertisementsPage />} />
+              <Route path="utility-banners" element={<UtilityBannersPage />} />
+              <Route path="featured-brands" element={<FeaturedBrandsPage />} />
             </Route>
             <Route path="*" element={<Navigate to={authenticated ? '/' : '/login'} replace />} />
           </Routes>

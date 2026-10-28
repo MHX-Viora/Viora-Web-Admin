@@ -1,4 +1,6 @@
 export type AdminAdvertisement = {
+  headline?: string | null;
+  description?: string | null;
   id: string;
   postId: string;
   advertiserId: string;
