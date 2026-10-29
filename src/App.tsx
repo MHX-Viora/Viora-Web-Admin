@@ -15,6 +15,7 @@ import { ReportsPage } from './pages/ReportsPage';
 import { ReportDetailPage } from './pages/ReportDetailPage';
 import { AdminLogsPage, ChatRoomsPage, HashtagsPage, NotificationsPage } from './pages/MetaPages';
 import { LoginPage } from './pages/LoginPage';
+import { LiveGiftsPage } from './pages/LiveGiftsPage';
 import { LegalDocumentsPage } from './pages/LegalDocumentsPage';
 import { StickerPacksPage } from './pages/StickerPacksPage';
 import { FinancePage } from './pages/FinancePage';
@@ -104,6 +105,7 @@ export default function App() {
               <Route path="admin-logs" element={<AdminLogsPage />} />
               <Route path="legal" element={<LegalDocumentsPage />} />
               <Route path="stickers" element={<StickerPacksPage />} />
+              <Route path="live-gifts" element={<LiveGiftsPage />} />
               <Route path="finance" element={<FinancePage />} />
               <Route path="finance/withdrawals/:id" element={<WithdrawalDetailPage />} />
               <Route path="advertisements" element={<AdvertisementsPage />} />
